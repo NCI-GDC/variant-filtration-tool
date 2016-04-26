@@ -5,6 +5,8 @@ USER root
 RUN apt-get update && apt-get install -y --force-yes \
     wget \
     python-dev \
+    libpq-dev \
+    python-psycopg2 \
     unzip \
     cmake \
     libncurses-dev
@@ -17,6 +19,8 @@ USER ubuntu
 ENV HOME /home/ubuntu
 
 RUN mkdir -p ${HOME}/tools/
+
+ENV variant-filtration-tool 0.1
 
 WORKDIR ${HOME}/tools/
 
@@ -56,5 +60,17 @@ RUN wget https://github.com/ucscCancer/fpfilter-tool/archive/master.zip && \
     unzip master.zip && \
     rm -f master.zip && \
     mv fpfilter-tool-master ${HOME}/tools/fpfilter-tool
+
+## Install variant-filtration-tool
+WORKDIR ${HOME}
+RUN mkdir -p ${HOME}/tools/variant-filtration-tool
+ADD variant-filtration-tool ${HOME}/tools/variant-filtration-tool/
+ADD setup.* ${HOME}/tools/variant-filtration-tool/
+ADD requirements.txt ${HOME}/tools/variant-filtration-tool/
+
+RUN /bin/bash -c "source ${HOME}/.local/bin/virtualenvwrapper.sh \
+    && source ~/.virtualenvs/p3/bin/activate \
+    && cd ~/tools/variant-filtration-tool \
+    && pip install -r ./requirements.txt"
 
 WORKDIR ${HOME}
