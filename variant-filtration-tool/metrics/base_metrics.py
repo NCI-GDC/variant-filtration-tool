@@ -1,6 +1,7 @@
 '''
 Base class for CWL metrics tool
 '''
+from cdis_pipe_utils import time_util
 
 class CWLMetricsTool(object):
     def __init__(self, time_file, normal_id, tumor_id, input_uuid, output_uuid, case_id, engine):
