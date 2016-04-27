@@ -61,6 +61,15 @@ RUN wget https://github.com/ucscCancer/fpfilter-tool/archive/master.zip && \
     rm -f master.zip && \
     mv fpfilter-tool-master ${HOME}/tools/fpfilter-tool
 
+## Install sambamba
+WORKDIR ${HOME}/tools/
+RUN mkdir -p ${HOME}/tools/sambamba
+RUN wget https://github.com/lomereiter/sambamba/releases/download/v0.6.0/sambamba_v0.6.0_linux.tar.bz2 && \
+    tar -xjf sambamba_v0.6.0_linux.tar.bz2 && \
+    mv sambamba_v0.6.0 ${HOME}/tools/sambamba/sambamba && \
+    chmod +x ${HOME}/tools/sambamba/sambamba && \
+    rm sambamba_v0.6.0_linux.tar.bz2
+ 
 ## Install variant-filtration-tool
 WORKDIR ${HOME}
 RUN mkdir -p ${HOME}/tools/variant-filtration-tool
