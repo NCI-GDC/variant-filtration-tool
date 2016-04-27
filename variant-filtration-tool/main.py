@@ -67,7 +67,7 @@ def main():
     ## SomaticScore filter
     p_ss = sp.add_parser('somaticscore', help='Filter VCF by somatic score')
     p_ss.add_argument('--input_vcf', required=True, help='The VCF you want to filter')
-    p_ss.add_argument('--output_vcf', required=True, help='The output filtered VCF file')
+    p_ss.add_argument('--output_vcf', required=True, help='The output filtered VCF file. Will gzip if ends in ".gz"')
     p_ss.add_argument('--tumor_sample_name', default='TUMOR', help='The name of the TUMOR sample in the VCF')
     p_ss.add_argument('--drop_somatic_score', default=25, type=int, help='If the somatic score is < this, remove it [25]')
     p_ss.add_argument('--min_somatic_score', default=40, type=int, 
