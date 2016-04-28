@@ -38,11 +38,11 @@ def run(args):
     passed   = 0
 
     # Open output file
-    writer = gzip.open(args.output_vcf, 'wb') if args.output_vcf.endswith('.gz') else open(args.output_vcf, 'wb')
+    writer = gzip.open(args.output_vcf, 'wt') if args.output_vcf.endswith('.gz') else open(args.output_vcf, 'w')
 
     # Process
     logger.info('Parsing input VCF file...')
-    reader = gzip.open(args.input_vcf, 'rb') if args.input_vcf.endswith('.gz') else open(args.input_vcf, 'r')
+    reader = gzip.open(args.input_vcf, 'rt') if args.input_vcf.endswith('.gz') else open(args.input_vcf, 'r')
     for line in reader:
         # Meta data
         if line.startswith('##'):
