@@ -7,10 +7,10 @@ import filters.somaticscore
 
 def pg_metrics(args):
     '''Main wrapper for adding metrics to PG db'''
-    from metrics.fpfilter import FPFilterMetricsTool
-    from metrics.somaticscorefilter import SomaticScoreFilterMetricsTool
-
     from cdis_pipe_utils import postgres
+    from metrics.fpfilter import FPFilterMetricsTool
+    # only fpfilter for now
+    #from metrics.somaticscorefilter import SomaticScoreFilterMetricsTool
 
     # postgres
     s = open(args.postgres_config, 'r').read()
@@ -32,11 +32,12 @@ def pg_metrics(args):
     if args.tool == 'fpfilter':
         tool = FPFilterMetricsTool(args.time_file, args.normal_id, args.tumor_id,
                                    args.input_uuid, args.output_uuid, args.case_id,
-                                   engine) 
-    elif args.tool == 'somaticscore':
-        tool = SomaticScoreFilterMetricsTool(args.time_file, args.normal_id, args.tumor_id,
-                                   args.input_uuid, args.output_uuid, args.case_id,
-                                   engine) 
+                                   engine, args.input_file) 
+    # only fpfilter for now
+    #elif args.tool == 'somaticscore':
+    #    tool = SomaticScoreFilterMetricsTool(args.time_file, args.normal_id, args.tumor_id,
+    #                               args.input_uuid, args.output_uuid, args.case_id,
+    #                               engine) 
 
     # Add metrics
     tool.add_metrics()
@@ -50,13 +51,16 @@ def main():
 
     ## Postgres 
     p_pg = sp.add_parser('postgres', help='Adding run metrics to GDC postgres for Variant-Filtration-Pipeline workflow')
-    p_pg.add_argument('--tool', required=True, choices=['fpfilter', 'somaticscore'], help='Which CWL tool used')
+    # onlye fpfilter for now
+    #p_pg.add_argument('--tool', required=True, choices=['fpfilter', 'somaticscore'], help='Which CWL tool used')
+    p_pg.add_argument('--tool', required=True, choices=['fpfilter'], help='Which CWL tool used')
     p_pg.add_argument('--time_file', required=True, help='path to the output of time for this tool')
     p_pg.add_argument('--normal_id', default="unknown", help='normal sample unique identifier')
     p_pg.add_argument('--tumor_id', default="unknown", help='tumor sample unique identifier')
     p_pg.add_argument('--input_uuid', default="unknown", help='input file UUID')
     p_pg.add_argument('--output_uuid', default="unknown", help='output file UUID')
     p_pg.add_argument('--case_id', default="unknown", help='case ID')
+    p_pg.add_argument('--input_file', help='path to the inputfile for md5')
 
     # database parameters
     p_pg_db = p_pg.add_argument_group("Database parameters")
