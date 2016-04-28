@@ -26,7 +26,7 @@ class FPFilterMetricsTool(CWLMetricsMd5Tool):
     def add_metrics(self):
         time_metrics = self.get_time_metrics()
         md5          = self.get_gz_md5()
-        nvar         = get_variant_counts()
+        nvar         = self.get_variant_counts()
         metrics      = FPFilterMetricsTable(case_id      = self.case_id,
                                        vcf_id            = self.output_uuid,
                                        src_vcf_id        = self.input_uuid,
