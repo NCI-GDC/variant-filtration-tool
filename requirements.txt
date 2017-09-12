@@ -1,2 +1,5 @@
- -e git+https://git@github.com/LabAdvComp/cdis_pipe_utils.git@5688cc19dcbeb5b170925bbf8b29420f8fc22981#egg=cdis_pipe_utils
- -e .
+appdirs==1.4.3
+packaging==16.8
+pyparsing==2.2.0
+pysam==0.11.2.2
+six==1.10.0

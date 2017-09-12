@@ -5,11 +5,12 @@ USER root
 RUN apt-get update && apt-get install -y --force-yes \
     wget \
     python-dev \
-    libpq-dev \
-    python-psycopg2 \
     unzip \
     cmake \
-    libncurses-dev
+    libncurses-dev \
+    zlib1g-dev \
+    libbz2-dev \
+    liblzma-dev
 
 RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -20,9 +21,21 @@ ENV HOME /home/ubuntu
 
 RUN mkdir -p ${HOME}/tools/
 
-ENV variant-filtration-tool 0.1
+ENV variant-filtration-tool 2.0 
 
 WORKDIR ${HOME}/tools/
+
+## Install HTSLIB
+ENV VERSION 1.3.2
+ENV NAME htslib
+ENV URL "https://github.com/samtools/htslib/releases/download/1.3.2/htslib-1.3.2.tar.bz2"
+
+RUN wget -q -O - ${URL} | tar -xjf - && \
+    cd ${NAME}-${VERSION} && \
+    ./configure && \
+    make
+
+ENV PATH ${PATH}:${HOME}/tools/${NAME}-${VERSION}/
 
 ## Install bam-readcount
 RUN wget https://github.com/genome/bam-readcount/archive/v0.7.4.tar.gz && \
@@ -39,47 +52,16 @@ RUN cd ${HOME}/tools/bam-readcount/build && \
     make -j && \
     make install
 
-## Install samtools
-USER ubuntu
-WORKDIR ${HOME}/tools/
-RUN wget https://github.com/samtools/samtools/releases/download/1.2/samtools-1.2.tar.bz2 && \
-    tar -xjf samtools-1.2.tar.bz2 && \
-    rm -f samtools-1.2.tar.bz2 && \
-    mv samtools-1.2 ${HOME}/tools/samtools
-
-USER root
-RUN cd ${HOME}/tools/samtools && \
-    make -j && \
-    make install
-
-USER ubuntu
-
-## Install fpfilter-tool
-WORKDIR ${HOME}/tools/
-RUN wget https://github.com/ucscCancer/fpfilter-tool/archive/master.zip && \
-    unzip master.zip && \
-    rm -f master.zip && \
-    mv fpfilter-tool-master ${HOME}/tools/fpfilter-tool
-
-## Install sambamba
-WORKDIR ${HOME}/tools/
-RUN mkdir -p ${HOME}/tools/sambamba
-RUN wget https://github.com/lomereiter/sambamba/releases/download/v0.6.0/sambamba_v0.6.0_linux.tar.bz2 && \
-    tar -xjf sambamba_v0.6.0_linux.tar.bz2 && \
-    mv sambamba_v0.6.0 ${HOME}/tools/sambamba/sambamba && \
-    chmod +x ${HOME}/tools/sambamba/sambamba && \
-    rm sambamba_v0.6.0_linux.tar.bz2
- 
 ## Install variant-filtration-tool
 WORKDIR ${HOME}
 RUN mkdir -p ${HOME}/tools/variant-filtration-tool
-ADD variant-filtration-tool ${HOME}/tools/variant-filtration-tool/
-ADD setup.* ${HOME}/tools/variant-filtration-tool/
+ADD utils ${HOME}/tools/variant-filtration-tool/
 ADD requirements.txt ${HOME}/tools/variant-filtration-tool/
 
 RUN /bin/bash -c "source ${HOME}/.local/bin/virtualenvwrapper.sh \
-    && source ~/.virtualenvs/p3/bin/activate \
+    && mkvirtualenv --python=/usr/bin/python2.7 p2 \
     && cd ~/tools/variant-filtration-tool \
-    && pip install -r ./requirements.txt"
+    && pip install -r ./requirements.txt \
+    && echo source ${HOME}/.virtualenvs/p2/bin/activate >> ${HOME}/.bashrc"
 
 WORKDIR ${HOME}
