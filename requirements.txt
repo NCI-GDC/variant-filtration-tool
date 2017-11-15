@@ -1,5 +1,5 @@
 appdirs==1.4.3
 packaging==16.8
 pyparsing==2.2.0
-pysam==0.11.2.2
+pysam==0.12.0.1
 six==1.10.0
