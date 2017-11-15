@@ -27,8 +27,9 @@ ENV variant-filtration-tool 2.5
 WORKDIR /opt
 
 ## Install vt
-RUN wget -q -O - https://github.com/atks/vt/archive/0.5772.tar.gz | tar -xzf - && \
-    cd /opt/vt-0.5772 && \
+RUN git clone https://github.com/atks/vt.git && \
+    cd vt && \
+    git checkout -b 40d79cfb6e0ccbfca93436afb81b2abbc7aa1c26 && \
     make
 
 ## Install variant-filtration-tool
