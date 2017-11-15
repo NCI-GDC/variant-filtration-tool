@@ -1,57 +1,31 @@
-FROM quay.io/jeremiahsavage/cdis_base
+FROM ubuntu:16.04
 
-USER root
+MAINTAINER Kyle Hernandez <kmhernan@uchicago.edu>
 
-RUN apt-get update && apt-get install -y --force-yes \
-    wget \
-    python-dev \
-    unzip \
-    cmake \
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get -y update && apt-get install -y --force-yes \
+    build-essential \
+    autoconf \
+    zlibc zlib1g-dev \
     libncurses-dev \
     zlib1g-dev \
     libbz2-dev \
-    liblzma-dev
+    liblzma-dev \
+    python3.5 \ 
+    python3.5-dev \
+    python3-pip \
+    wget \
+    time \
+    git-core
 
 RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-USER ubuntu
+ENV variant-filtration-tool 2.5
 
-ENV HOME /home/ubuntu
-
-RUN mkdir -p ${HOME}/tools/
-
-ENV variant-filtration-tool 2.0 
-
-WORKDIR ${HOME}/tools/
-
-## Install HTSLIB
-ENV VERSION 1.3.2
-ENV NAME htslib
-ENV URL "https://github.com/samtools/htslib/releases/download/1.3.2/htslib-1.3.2.tar.bz2"
-
-RUN wget -q -O - ${URL} | tar -xjf - && \
-    cd ${NAME}-${VERSION} && \
-    ./configure && \
-    make
-
-ENV PATH ${PATH}:${HOME}/tools/${NAME}-${VERSION}/
-
-## Install bam-readcount
-RUN wget https://github.com/genome/bam-readcount/archive/v0.7.4.tar.gz && \
-    tar -xzf v0.7.4.tar.gz && \
-    rm -f v0.7.4.tar.gz && \
-    mv bam-readcount-0.7.4 ${HOME}/tools/bam-readcount
-
-RUN cd ${HOME}/tools/bam-readcount && mkdir build
-
-USER root
-RUN cd ${HOME}/tools/bam-readcount/build && \
-    cmake ../ && \
-    make deps && \
-    make -j && \
-    make install
-
+## Install vt
+RUN wget -q -O - https://github.com/atks/vt/archive/0.5772.tar.gz  
 ## Install variant-filtration-tool
 WORKDIR ${HOME}
 RUN mkdir -p ${HOME}/tools/variant-filtration-tool
