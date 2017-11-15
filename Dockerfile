@@ -24,18 +24,20 @@ RUN apt-get clean \
 
 ENV variant-filtration-tool 2.5
 
+WORKDIR /opt
+
 ## Install vt
-RUN wget -q -O - https://github.com/atks/vt/archive/0.5772.tar.gz  
+RUN wget -q -O - https://github.com/atks/vt/archive/0.5772.tar.gz | tar -xzf - && \
+    cd /opt/vt-0.5772 && \
+    make
+
 ## Install variant-filtration-tool
-WORKDIR ${HOME}
-RUN mkdir -p ${HOME}/tools/variant-filtration-tool
-ADD utils ${HOME}/tools/variant-filtration-tool/
-ADD requirements.txt ${HOME}/tools/variant-filtration-tool/
+RUN mkdir /opt/variant-filtration-tool
+WORKDIR /opt/variant-filtration-tool
+ADD utils /opt/variant-filtration-tool 
+ADD requirements.txt /opt/variant-filtration-tool 
 
-RUN /bin/bash -c "source ${HOME}/.local/bin/virtualenvwrapper.sh \
-    && mkvirtualenv --python=/usr/bin/python2.7 p2 \
-    && cd ~/tools/variant-filtration-tool \
-    && pip install -r ./requirements.txt \
-    && echo source ${HOME}/.virtualenvs/p2/bin/activate >> ${HOME}/.bashrc"
+RUN cd /opt/variant-filtration-tool && \
+    pip3 install -r ./requirements.txt
 
-WORKDIR ${HOME}
+WORKDIR /opt 
