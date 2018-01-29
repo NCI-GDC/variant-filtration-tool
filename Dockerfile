@@ -17,6 +17,7 @@ RUN apt-get -y update && apt-get install -y --force-yes \
     python3-pip \
     wget \
     time \
+    sqlite3 \
     git-core
 
 RUN apt-get clean \
@@ -27,10 +28,11 @@ ENV variant-filtration-tool 2.6
 WORKDIR /opt
 
 ## Install vt
-RUN git clone https://github.com/atks/vt.git && \
-    cd vt && \
-    git checkout -b 40d79cfb6e0ccbfca93436afb81b2abbc7aa1c26 && \
-    make
+## Only needed for PINDEL
+#RUN git clone https://github.com/atks/vt.git && \
+#    cd vt && \
+#    git checkout -b 40d79cfb6e0ccbfca93436afb81b2abbc7aa1c26 && \
+#    make
 
 ## Install variant-filtration-tool
 RUN mkdir /opt/variant-filtration-tool
