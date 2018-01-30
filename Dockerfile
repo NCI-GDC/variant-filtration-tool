@@ -23,7 +23,7 @@ RUN apt-get -y update && apt-get install -y --force-yes \
 RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV variant-filtration-tool 2.6
+ENV variant-filtration-tool 2.7
 
 WORKDIR /opt
 
