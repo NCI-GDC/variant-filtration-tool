@@ -6,7 +6,6 @@ metadata attributes:
     * fileDate - the date of the processing
     * center - The NCI Genomic Data Commons (processing center not sequencing)
     * reference - The reference name (GRCh38.d1.vd1.fa)
-    * gdcWorkflow - The caller workflow information (there will be multiple)
     * INDIVIDUAL - The patient barcode and case id
     * SAMPLE - the normal/tumor barcode, aliquot uuid and bam uuid (there will be multiple)
 """
@@ -57,18 +56,6 @@ def build_header( reader, args ):
       '##fileDate={0}'.format(datetime.date.today().strftime('%Y%m%d')),
       '##center="NCI Genomic Data Commons (GDC)"',
       '##reference={0}'.format(args.reference_name),
-      '##gdcWorkflow=<ID={0},Name={1},Description="{2}",Version={3}>'.format(
-          args.caller_workflow_id.lower().replace(' ', '_'),
-          args.caller_workflow_name.lower().replace(' ', '_'),
-          args.caller_workflow_description if \
-              args.caller_workflow_description else '',
-          args.caller_workflow_version),
-      '##gdcWorkflow=<ID={0},Name={1},Description="{2}",Version={3}>'.format(
-          args.annotation_workflow_id.lower().replace(' ', '_'),
-          args.annotation_workflow_name.lower().replace(' ', '_'),
-          args.annotation_workflow_description if \
-              args.annotation_workflow_description else '',
-          args.annotation_workflow_version),
       '##INDIVIDUAL=<NAME={0},ID={1}>'.format(args.patient_barcode, args.case_id),
       '##SAMPLE=<ID=NORMAL,NAME={0},ALIQUOT_ID={1},BAM_ID={2}>'.format(
           args.normal_barcode, args.normal_aliquot_uuid, args.normal_bam_uuid),
@@ -105,14 +92,6 @@ def get_args():
     p.add_argument('--normal_barcode', required=True, help='Normal barcode')
     p.add_argument('--normal_aliquot_uuid', required=True, help='Normal aliquot uuid')
     p.add_argument('--normal_bam_uuid', required=True, help='Normal BAM uuid')
-    p.add_argument('--caller_workflow_id', required=True, help='sets "ID" in gdcWorkflow header')
-    p.add_argument('--caller_workflow_name', required=True, help='sets "Name" in gdcWorkflow header')
-    p.add_argument('--caller_workflow_description', help='sets "Description" in gdcWorkflow header')
-    p.add_argument('--caller_workflow_version', default='1.0', help='sets "Version" in gdcWorkflow header')
-    p.add_argument('--annotation_workflow_id', required=True, help='sets "ID" in gdcWorkflow header')
-    p.add_argument('--annotation_workflow_name', required=True, help='sets "Name" in gdcWorkflow header')
-    p.add_argument('--annotation_workflow_description', help='sets "Description" in gdcWorkflow header')
-    p.add_argument('--annotation_workflow_version', default='1.0', help='sets "Version" in gdcWorkflow header')
     return p.parse_args()
 
 if __name__ == '__main__':
