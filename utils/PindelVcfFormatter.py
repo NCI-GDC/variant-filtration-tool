@@ -97,7 +97,10 @@ def get_header(reader):
                         curr.append((k, v.replace('"', '')))
                 header.add_meta(record.key, items=curr) 
             else: header.add_record(record)
-        else: header.add_record(record)
+        else:
+            if record.type == 'GENERIC' and record.key == 'center' and record.value == '""':
+                continue 
+            header.add_record(record)
     for sample in reader.header.samples:
         header.add_sample(sample)
     return header
