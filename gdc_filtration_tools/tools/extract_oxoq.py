@@ -7,10 +7,11 @@ import sqlite3
 from math import log10
 from typing import NewType
 
-from gdc_filtration_tools.logger import Logger 
+from gdc_filtration_tools.logger import Logger
 
 
-Cursor = NewType('Cursor', sqlite3.Cursor)
+Cursor = NewType("Cursor", sqlite3.Cursor)
+
 
 def get_oxoq(cur: Cursor, context: str, table: str, input_state: str) -> float:
     """
@@ -21,13 +22,17 @@ def get_oxoq(cur: Cursor, context: str, table: str, input_state: str) -> float:
     NTOT = 0
     NALTOXO = 0
     NALTNON = 0
-    oxoQ = float('NaN')
+    oxoQ = float("NaN")
 
     # Query
-    cur.execute("""
+    cur.execute(
+        """
     SELECT TOTAL_BASES, ALT_OXO_BASES, ALT_NONOXO_BASES, OXIDATION_Q
     FROM {0} WHERE CONTEXT='{1}' AND input_state='{2}'
-    """.format(table, context, input_state))
+    """.format(
+            table, context, input_state
+        )
+    )
 
     # Parse results
     for row in cur.fetchall():
@@ -38,14 +43,18 @@ def get_oxoq(cur: Cursor, context: str, table: str, input_state: str) -> float:
         NALTNON = NALTNON + int(alt_nonoxo_bases)
         oxoQ = float(oxidation_q)
     if N > 1:
-        er = float(max(NALTOXO-NALTNON, 1.0001))/float(NTOT)
-        oxoQ = -10.0*log10(er)
+        er = float(max(NALTOXO - NALTNON, 1.0001)) / float(NTOT)
+        oxoQ = -10.0 * log10(er)
     return oxoQ
 
 
-def extract_oxoq_from_sqlite(db_file: str, *, context: str = "CCG",
-                             table: str = "picard_CollectOxoGMetrics",
-                             input_state: str = "markduplicates_readgroups") -> None:
+def extract_oxoq_from_sqlite(
+    db_file: str,
+    *,
+    context: str = "CCG",
+    table: str = "picard_CollectOxoGMetrics",
+    input_state: str = "markduplicates_readgroups"
+) -> None:
     """
     Extract the OXOQ score for a particular context from the GDC
     harmonization metrics SQLite file. The score is printed to
@@ -64,7 +73,7 @@ def extract_oxoq_from_sqlite(db_file: str, *, context: str = "CCG",
     with sqlite3.connect(db_file) as conn:
         cur = conn.cursor()
         data = get_oxoq(cur, context, table, input_state)
-        qscore = '{0:.2f}'.format(data)
+        qscore = "{0:.2f}".format(data)
         logger.info("context: {0}".format(context))
         logger.info("oxoQ score: {0}".format(qscore))
         print(qscore)

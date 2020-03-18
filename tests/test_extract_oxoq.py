@@ -8,15 +8,16 @@ import tempfile
 from gdc_filtration_tools.tools.extract_oxoq import get_oxoq, extract_oxoq_from_sqlite
 from utils import cleanup_files, captured_output
 
+
 @attr.s
 class OxoqRecord(object):
-    total_bases = attr.ib() 
-    alt_oxo_bases = attr.ib() 
-    alt_nonoxo_bases = attr.ib() 
+    total_bases = attr.ib()
+    alt_oxo_bases = attr.ib()
+    alt_nonoxo_bases = attr.ib()
     oxidation_q = attr.ib()
-    context = attr.ib(default = 'CCG')
-    input_state = attr.ib(default = 'gatk_applybqsr_readgroups')
-    table = attr.ib(default='picard_CollectOxoGMetrics', kw_only=True)
+    context = attr.ib(default="CCG")
+    input_state = attr.ib(default="gatk_applybqsr_readgroups")
+    table = attr.ib(default="picard_CollectOxoGMetrics", kw_only=True)
 
     def insert(self, cur):
         record = attr.astuple(
@@ -24,6 +25,7 @@ class OxoqRecord(object):
         )
         qstr = ",".join(["?" for i in range(len(record))])
         cur.execute("insert into {0} values ({1})".format(self.table, qstr), record)
+
 
 def build_test_schema(conn):
     """
@@ -39,7 +41,7 @@ def build_test_schema(conn):
         CONTEXT TEXT,
         input_state TEXT
     );
-    """ 
+    """
     csr = conn.executescript(sql_script)
     csr.close()
 
@@ -55,12 +57,16 @@ class TestExtractOxoq(unittest.TestCase):
             cur = conn.cursor()
             rec.insert(cur)
 
-            res = get_oxoq(cur, 'CCG', 'picard_CollectOxoGMetrics', 'gatk_applybqsr_readgroups')
-            self.assertEqual(res, exp) 
+            res = get_oxoq(
+                cur, "CCG", "picard_CollectOxoGMetrics", "gatk_applybqsr_readgroups"
+            )
+            self.assertEqual(res, exp)
 
             rec_b = OxoqRecord("20000", "400", "200", "20.23")
             rec_b.insert(cur)
-            res = get_oxoq(cur, 'CCG', 'picard_CollectOxoGMetrics', 'gatk_applybqsr_readgroups')
+            res = get_oxoq(
+                cur, "CCG", "picard_CollectOxoGMetrics", "gatk_applybqsr_readgroups"
+            )
             self.assertEqual(res, 20.0)
 
     def test_extract_oxoq_from_sqlite(self):
@@ -77,8 +83,8 @@ class TestExtractOxoq(unittest.TestCase):
             rec.insert(cur)
 
         with captured_output() as (stdout, _):
-            extract_oxoq_from_sqlite(fn, input_state = 'gatk_applybqsr_readgroups')
+            extract_oxoq_from_sqlite(fn, input_state="gatk_applybqsr_readgroups")
 
         cleanup_files(fn)
-        sout = float(stdout.getvalue().rstrip('\r\n'))
+        sout = float(stdout.getvalue().rstrip("\r\n"))
         self.assertEqual(sout, 30.23)

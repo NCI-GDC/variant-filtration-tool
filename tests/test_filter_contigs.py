@@ -11,13 +11,13 @@ from gdc_filtration_tools.tools.filter_contigs import filter_contigs
 
 class TestFilterContigs(unittest.TestCase):
     def test_filter_contigs(self):
-        ivcf = get_test_data_path('filter_contigs.vcf')
-        (fd, fn) = tempfile.mkstemp(suffix='.vcf')
+        ivcf = get_test_data_path("filter_contigs.vcf")
+        (fd, fn) = tempfile.mkstemp(suffix=".vcf")
         with captured_output() as (_, stderr):
             filter_contigs(ivcf, fn)
 
         found = 0
-        exp_chroms = ['chr1', 'chr2']
+        exp_chroms = ["chr1", "chr2"]
         rdr = pysam.VariantFile(fn)
         try:
             for record in rdr:
@@ -28,7 +28,7 @@ class TestFilterContigs(unittest.TestCase):
         self.assertEqual(found, 2)
         cleanup_files(fn)
 
-        (fd, fn) = tempfile.mkstemp(suffix='.vcf.gz')
+        (fd, fn) = tempfile.mkstemp(suffix=".vcf.gz")
         with captured_output() as (_, stderr):
             filter_contigs(ivcf, fn)
 
