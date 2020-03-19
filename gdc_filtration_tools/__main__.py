@@ -8,7 +8,8 @@ from gdc_filtration_tools.logger import Logger
 from gdc_filtration_tools.tools.filter_contigs import filter_contigs
 from gdc_filtration_tools.tools.extract_oxoq import extract_oxoq_from_sqlite
 from gdc_filtration_tools.tools.format_gdc_vcf import format_gdc_vcf
-from gdc_filtration_tools.tools.format_pindel_vcf import format_pindel_vcf 
+from gdc_filtration_tools.tools.format_pindel_vcf import format_pindel_vcf
+from gdc_filtration_tools.tools.filter_pos_dkfz import position_filter_dkfz
 
 
 def main(args: List[str] = None) -> None:
@@ -18,8 +19,13 @@ def main(args: List[str] = None) -> None:
     Logger.setup_root_logger()
 
     logger = Logger.get_logger("main")
-    funcs = [filter_contigs, extract_oxoq_from_sqlite, format_gdc_vcf,
-             format_pindel_vcf]
+    funcs = [
+        filter_contigs,
+        extract_oxoq_from_sqlite,
+        format_gdc_vcf,
+        format_pindel_vcf,
+        position_filter_dkfz,
+    ]
     defopt.run(funcs, argv=args if args is not None else sys.argv[1:])
     logger.info("Finished!")
 
