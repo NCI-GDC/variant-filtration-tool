@@ -11,6 +11,8 @@ from gdc_filtration_tools.tools.format_gdc_vcf import format_gdc_vcf
 from gdc_filtration_tools.tools.format_pindel_vcf import format_pindel_vcf
 from gdc_filtration_tools.tools.filter_pos_dkfz import position_filter_dkfz
 from gdc_filtration_tools.tools.filter_somatic_score import filter_somatic_score
+from gdc_filtration_tools.tools.add_oxog_filters import add_oxog_filters
+from gdc_filtration_tools.tools.filter_nonstandard_variants import filter_nonstandard_variants
 
 
 def main(args: List[str] = None) -> None:
@@ -27,6 +29,8 @@ def main(args: List[str] = None) -> None:
         format_pindel_vcf,
         position_filter_dkfz,
         filter_somatic_score,
+        add_oxog_filters,
+        filter_nonstandard_variants,
     ]
     defopt.run(funcs, argv=args if args is not None else sys.argv[1:])
     logger.info("Finished!")
