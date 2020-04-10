@@ -9,13 +9,10 @@ from gdc_filtration_tools.logger import Logger
 from gdc_filtration_tools.utils import get_pysam_outmode
 
 
-ALLOWED_BASES = {'A', 'C', 'T', 'G'}
+ALLOWED_BASES = {"A", "C", "T", "G"}
 
 
-def filter_nonstandard_variants( 
-    input_vcf: str,
-    output_vcf: str
-) -> None:
+def filter_nonstandard_variants(input_vcf: str, output_vcf: str) -> None:
     """
     Remove non-ACTG loci from a *SNP-ONLY* VCF. No validation that
     the VCF is SNP-only is done.
@@ -47,8 +44,11 @@ def filter_nonstandard_variants(
             alleles = list(record.alleles)
             check = set(alleles) - ALLOWED_BASES
             if check:
-                logger.warning('Removing {0}:{1}:{2}'.format(
-                    record.chrom, record.pos, ','.join(alleles)))
+                logger.warning(
+                    "Removing {0}:{1}:{2}".format(
+                        record.chrom, record.pos, ",".join(alleles)
+                    )
+                )
                 removed += 1
             else:
                 written += 1
@@ -63,7 +63,5 @@ def filter_nonstandard_variants(
         tbx = pysam.tabix_index(output_vcf, preset="vcf", force=True)
 
     logger.info(
-        "Processed {} records - Removed {}; Wrote {} ".format(
-            total, removed, written
-        )
+        "Processed {} records - Removed {}; Wrote {} ".format(total, removed, written)
     )
