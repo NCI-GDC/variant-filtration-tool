@@ -1,0 +1,4 @@
+contig	position	ref	F1_A	F1_C	F1_G	F1_T	F2_A	F2_C	F2_G	F2_T	R1_A	R1_C	R1_G	R1_T	R2_A	R2_C	R2_G	R2_T
+chr1	1	C	2	80	1	4	3	103	0	8	0	127	2	12	1	114	2	13
+chr1	20	C	3	72	0	0	11	92	0	0	9	121	0	0	13	106	0	0
+chr1	40	A	1	0	0	1	0	0	0	2	0	0	0	3	0	0	0	0

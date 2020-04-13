@@ -16,6 +16,7 @@ from gdc_filtration_tools.tools.filter_nonstandard_variants import (
     filter_nonstandard_variants,
 )
 from gdc_filtration_tools.tools.create_oxog_intervals import create_oxog_intervals
+from gdc_filtration_tools.tools.create_dtoxog_maf import create_dtoxog_maf
 
 
 def main(args: List[str] = None) -> None:
@@ -35,6 +36,7 @@ def main(args: List[str] = None) -> None:
         add_oxog_filters,
         filter_nonstandard_variants,
         create_oxog_intervals,
+        create_dtoxog_maf,
     ]
     defopt.run(funcs, argv=args if args is not None else sys.argv[1:])
     logger.info("Finished!")
