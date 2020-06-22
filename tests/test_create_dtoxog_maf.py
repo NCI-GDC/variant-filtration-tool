@@ -14,7 +14,7 @@ from gdc_filtration_tools.tools.create_dtoxog_maf import (
     get_context,
     extract_maf_oxog_values,
     generate_maf_record,
-    MAF_COLUMNS
+    MAF_COLUMNS,
 )
 from gdc_filtration_tools.__main__ import main
 
@@ -22,60 +22,60 @@ from gdc_filtration_tools.__main__ import main
 # test_oxog_ref.fa
 class TestCreatedToxoGMaf(unittest.TestCase):
     exp_maf = [
-      {
-        "Chromosome": "chr1",
-        "End_position": "1",
-        "Matched_Norm_Sample_Barcode": "i1-Normal",
-        "Reference_Allele": "C",
-        "Start_position": "1",
-        "Tumor_Sample_Barcode": "i1-Tumor",
-        "Tumor_Seq_Allele1": "T",
-        "Tumor_Seq_Allele2": "T",
-        "Variant_Type": "SNP",
-        "i_picard_oxoQ": "32.00",
-        "i_t_ALT_F1R2": "17",
-        "i_t_ALT_F2R1": "20",
-        "i_t_Foxog": "0.5405405405405406",
-        "i_t_REF_F1R2": "194",
-        "i_t_REF_F2R1": "230",
-        "ref_context": "CTTGGGGGGGG"
-      },
-      {
-        "Chromosome": "chr1",
-        "End_position": "20",
-        "Matched_Norm_Sample_Barcode": "i1-Normal",
-        "Reference_Allele": "C",
-        "Start_position": "20",
-        "Tumor_Sample_Barcode": "i1-Tumor",
-        "Tumor_Seq_Allele1": "A",
-        "Tumor_Seq_Allele2": "A",
-        "Variant_Type": "SNP",
-        "i_picard_oxoQ": "32.00",
-        "i_t_ALT_F1R2": "16",
-        "i_t_ALT_F2R1": "20",
-        "i_t_Foxog": "0.5555555555555556",
-        "i_t_REF_F1R2": "178",
-        "i_t_REF_F2R1": "213",
-        "ref_context": "GGGGGGGGGGCGGGGGGGGGG"
-      },
-      {
-        "Chromosome": "chr1",
-        "End_position": "40",
-        "Matched_Norm_Sample_Barcode": "i1-Normal",
-        "Reference_Allele": "A",
-        "Start_position": "40",
-        "Tumor_Sample_Barcode": "i1-Tumor",
-        "Tumor_Seq_Allele1": "T",
-        "Tumor_Seq_Allele2": "T",
-        "Variant_Type": "SNP",
-        "i_picard_oxoQ": "32.00",
-        "i_t_ALT_F1R2": "1",
-        "i_t_ALT_F2R1": "5",
-        "i_t_Foxog": "0.8333333333333334",
-        "i_t_REF_F1R2": "1",
-        "i_t_REF_F2R1": "0",
-        "ref_context": "GGGGGGGTTTACCGGGGGGGG"
-      }
+        {
+            "Chromosome": "chr1",
+            "End_position": "1",
+            "Matched_Norm_Sample_Barcode": "i1-Normal",
+            "Reference_Allele": "C",
+            "Start_position": "1",
+            "Tumor_Sample_Barcode": "i1-Tumor",
+            "Tumor_Seq_Allele1": "T",
+            "Tumor_Seq_Allele2": "T",
+            "Variant_Type": "SNP",
+            "i_picard_oxoQ": "32.00",
+            "i_t_ALT_F1R2": "17",
+            "i_t_ALT_F2R1": "20",
+            "i_t_Foxog": "0.5405405405405406",
+            "i_t_REF_F1R2": "194",
+            "i_t_REF_F2R1": "230",
+            "ref_context": "CTTGGGGGGGG",
+        },
+        {
+            "Chromosome": "chr1",
+            "End_position": "20",
+            "Matched_Norm_Sample_Barcode": "i1-Normal",
+            "Reference_Allele": "C",
+            "Start_position": "20",
+            "Tumor_Sample_Barcode": "i1-Tumor",
+            "Tumor_Seq_Allele1": "A",
+            "Tumor_Seq_Allele2": "A",
+            "Variant_Type": "SNP",
+            "i_picard_oxoQ": "32.00",
+            "i_t_ALT_F1R2": "16",
+            "i_t_ALT_F2R1": "20",
+            "i_t_Foxog": "0.5555555555555556",
+            "i_t_REF_F1R2": "178",
+            "i_t_REF_F2R1": "213",
+            "ref_context": "GGGGGGGGGGCGGGGGGGGGG",
+        },
+        {
+            "Chromosome": "chr1",
+            "End_position": "40",
+            "Matched_Norm_Sample_Barcode": "i1-Normal",
+            "Reference_Allele": "A",
+            "Start_position": "40",
+            "Tumor_Sample_Barcode": "i1-Tumor",
+            "Tumor_Seq_Allele1": "T",
+            "Tumor_Seq_Allele2": "T",
+            "Variant_Type": "SNP",
+            "i_picard_oxoQ": "32.00",
+            "i_t_ALT_F1R2": "1",
+            "i_t_ALT_F2R1": "5",
+            "i_t_Foxog": "0.8333333333333334",
+            "i_t_REF_F1R2": "1",
+            "i_t_REF_F2R1": "0",
+            "ref_context": "GGGGGGGTTTACCGGGGGGGG",
+        },
     ]
 
     exp_oxog = {
@@ -144,7 +144,7 @@ class TestCreatedToxoGMaf(unittest.TestCase):
 
     def test_generate_maf_record(self):
         from gdc_filtration_tools.logger import Logger
-        
+
         imets = get_test_data_path("test_oxog_metrics.txt")
         mets = load_oxog(imets)
         vcf_file = get_test_data_path("test_input_for_dtoxog.vcf")
@@ -156,13 +156,13 @@ class TestCreatedToxoGMaf(unittest.TestCase):
         try:
             for record in vcf:
                 maf_record = generate_maf_record(record, fasta, mets, 32.0, logger)
-                self.assertEqual(maf_record, TestCreatedToxoGMaf.exp_maf[count]) 
+                self.assertEqual(maf_record, TestCreatedToxoGMaf.exp_maf[count])
                 count += 1
 
         finally:
             fasta.close()
             vcf.close()
-    
+
     def test_create_dtoxog_maf(self):
         imets = get_test_data_path("test_oxog_metrics.txt")
         vcf_file = get_test_data_path("test_input_for_dtoxog.vcf")
@@ -171,49 +171,45 @@ class TestCreatedToxoGMaf(unittest.TestCase):
         try:
             with captured_output() as (_, stderr):
                 create_dtoxog_maf(vcf_file, fn, fa_file, imets, 32.0)
-                with open(fn, 'rt') as fh:
+                with open(fn, "rt") as fh:
                     self.assertEqual(fh.readline(), "#version 2.4.1\n")
-                    header = fh.readline().rstrip('\r\n').split('\t')
+                    header = fh.readline().rstrip("\r\n").split("\t")
                     self.assertEqual(header, MAF_COLUMNS)
                     count = 0
                     for line in fh:
-                        dat = dict(zip(header, line.rstrip('\r\n').split('\t')))
+                        dat = dict(zip(header, line.rstrip("\r\n").split("\t")))
                         self.assertEqual(dat, TestCreatedToxoGMaf.exp_maf[count])
                         count += 1
             serr = stderr.getvalue().split("\n")
-            self.assertTrue("Processed 3 records" in serr[2]) 
+            self.assertTrue("Processed 3 records" in serr[2])
         finally:
             cleanup_files(fn)
 
     def test_cli(self):
-       imets = get_test_data_path("test_oxog_metrics.txt")
-       vcf_file = get_test_data_path("test_input_for_dtoxog.vcf")
-       fa_file = get_test_data_path("test_oxog_ref.fa")
-       (fd, fn) = tempfile.mkstemp()
-       try:
-           with captured_output() as (_, stderr):
-               main(args=["create-dtoxog-maf", vcf_file, fn, fa_file, imets, "32.0"])
-               with open(fn, 'rt') as fh:
-                   self.assertEqual(fh.readline(), "#version 2.4.1\n")
-                   header = fh.readline().rstrip('\r\n').split('\t')
-                   self.assertEqual(header, MAF_COLUMNS)
-                   count = 0
-                   for line in fh:
-                       dat = dict(zip(header, line.rstrip('\r\n').split('\t')))
-                       self.assertEqual(dat, TestCreatedToxoGMaf.exp_maf[count])
-                       count += 1
-                   self.assertEqual(count, 3)
+        imets = get_test_data_path("test_oxog_metrics.txt")
+        vcf_file = get_test_data_path("test_input_for_dtoxog.vcf")
+        fa_file = get_test_data_path("test_oxog_ref.fa")
+        (fd, fn) = tempfile.mkstemp()
+        try:
+            with captured_output() as (_, stderr):
+                main(args=["create-dtoxog-maf", vcf_file, fn, fa_file, imets, "32.0"])
+                with open(fn, "rt") as fh:
+                    self.assertEqual(fh.readline(), "#version 2.4.1\n")
+                    header = fh.readline().rstrip("\r\n").split("\t")
+                    self.assertEqual(header, MAF_COLUMNS)
+                    count = 0
+                    for line in fh:
+                        dat = dict(zip(header, line.rstrip("\r\n").split("\t")))
+                        self.assertEqual(dat, TestCreatedToxoGMaf.exp_maf[count])
+                        count += 1
+                    self.assertEqual(count, 3)
 
-           serr = stderr.getvalue()
-           self.assertTrue(
-               "Converts a SNP VCF to dToxoG MAF format." in serr
-           )
-           self.assertTrue(
-               "Processed 3 records" in serr
-           )
+            serr = stderr.getvalue()
+            self.assertTrue("Converts a SNP VCF to dToxoG MAF format." in serr)
+            self.assertTrue("Processed 3 records" in serr)
 
-           serr = [i for i in serr.split("\n") if i.rstrip("\r\n")]
-           self.assertTrue("gdc_filtration_tools.create_dtoxog_maf" in serr[0])
-           self.assertTrue("gdc_filtration_tools.main" in serr[-1])
-       finally:
-           cleanup_files(fn)
+            serr = [i for i in serr.split("\n") if i.rstrip("\r\n")]
+            self.assertTrue("gdc_filtration_tools.create_dtoxog_maf" in serr[0])
+            self.assertTrue("gdc_filtration_tools.main" in serr[-1])
+        finally:
+            cleanup_files(fn)

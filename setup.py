@@ -15,7 +15,7 @@ setuptools.setup(
         ]
     },
     install_requires = [
-      'pysam',
+      'pysam>=0.16.0',
       'defopt'
     ]
 )

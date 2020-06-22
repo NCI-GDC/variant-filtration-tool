@@ -281,7 +281,9 @@ def create_dtoxog_maf(
             o.write("\t".join(MAF_COLUMNS) + "\n")
             for record in vcf_reader.fetch():
                 total += 1
-                maf_record = generate_maf_record(record, fasta_reader, oxog, oxoq_score, logger)
+                maf_record = generate_maf_record(
+                    record, fasta_reader, oxog, oxoq_score, logger
+                )
                 row = list([maf_record[i] for i in MAF_COLUMNS])
                 o.write("\t".join(row) + "\n")
 
