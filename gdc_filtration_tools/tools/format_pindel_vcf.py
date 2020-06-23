@@ -92,8 +92,7 @@ def format_pindel_vcf(input_vcf: str, output_vcf: str) -> None:
     Formats Pindel VCFs to work better with GDC downstream workflows.
 
     :param input_vcf: The input VCF file to filter.
-    :param output_vcf: The output filtered VCF file to create. \
-    BGzip and tabix-index created if ends with '.gz'.
+    :param output_vcf: The output filtered VCF file to create. BGzip and tabix-index created if ends with '.gz'.
     """
     logger = Logger.get_logger("format_pindel_vcf")
     logger.info("Formats Pindel VCFs.")

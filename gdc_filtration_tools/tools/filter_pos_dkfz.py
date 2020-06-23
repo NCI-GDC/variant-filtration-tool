@@ -19,8 +19,7 @@ def position_filter_dkfz(input_vcf: str, output_vcf: str) -> None:
     are made to validate this. 
 
     :param input_vcf: The input VCF file to filter.
-    :param output_vcf: The output filtered VCF file to create. \
-    BGzip and tabix-index created if ends with '.gz'.
+    :param output_vcf: The output filtered VCF file to create. BGzip and tabix-index created if ends with '.gz'.
     """
     logger = Logger.get_logger("position_filter_dkfz")
     logger.info("Position Filter for DKFZ.")

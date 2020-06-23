@@ -96,8 +96,7 @@ def format_gdc_vcf(
     Adds VCF header metadata specific to the GDC.
 
     :param input_vcf: The input VCF file to format.
-    :param output_vcf: The output formatted VCF file to create. BGzip and \
-                       tabix-index created if ends with '.gz'.
+    :param output_vcf: The output formatted VCF file to create. BGzip and tabix-index created if ends with '.gz'.
     :param patient_barcode: The case submitter id.
     :param case_id: The case uuid.
     :param tumor_barcode: The tumor aliquot submitter id.
