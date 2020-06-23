@@ -65,7 +65,7 @@ def get_header(old_header: VariantHeaderT) -> VariantHeaderT:
         else:
             header.add_record(record)
 
-    for sample in header.samples:
+    for sample in old_header.samples:
         header.add_sample(sample)
 
     return header

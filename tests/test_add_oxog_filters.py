@@ -19,9 +19,13 @@ class TestAddOxogFilters(unittest.TestCase):
             with captured_output() as (_, stderr):
                 add_oxog_filters(vcf_file, oxo_vcf, fn)
             vcf = pysam.VariantFile(fn)
-            self.assertEqual(vcf.header.filters.keys(), ['PASS', 'oxog'])
+            self.assertEqual(vcf.header.filters.keys(), ["PASS", "oxog"])
             for record in vcf:
-                if record.contig == "chr1" and record.pos == 10 and record.alleles == ('A', 'T',):
+                if (
+                    record.contig == "chr1"
+                    and record.pos == 10
+                    and record.alleles == ("A", "T",)
+                ):
                     self.assertEqual(record.filter.keys(), ["oxog"])
                 else:
                     self.assertEqual(record.filter.keys(), ["PASS"])
@@ -37,18 +41,27 @@ class TestAddOxogFilters(unittest.TestCase):
         (fd, fn) = tempfile.mkstemp(suffix=".vcf.gz")
         try:
             with captured_output() as (_, stderr):
-                main(args=["add-oxog-filters", vcf_file, oxo_vcf, fn]) 
+                main(args=["add-oxog-filters", vcf_file, oxo_vcf, fn])
             vcf = pysam.VariantFile(fn)
-            self.assertEqual(vcf.header.filters.keys(), ['PASS', 'oxog'])
+            self.assertEqual(vcf.header.filters.keys(), ["PASS", "oxog"])
             for record in vcf:
-                if record.contig == "chr1" and record.pos == 10 and record.alleles == ('A', 'T',):
+                if (
+                    record.contig == "chr1"
+                    and record.pos == 10
+                    and record.alleles == ("A", "T",)
+                ):
                     self.assertEqual(record.filter.keys(), ["oxog"])
                 else:
                     self.assertEqual(record.filter.keys(), ["PASS"])
             vcf.close()
             serr = stderr.getvalue()
-            self.assertTrue("[gdc_filtration_tools.add_oxog_filters] - Creating tabix index" in serr)
-            self.assertTrue("[gdc_filtration_tools.add_oxog_filters] - Processed 4 records - Tagged 1; Wrote 4" in serr)
+            self.assertTrue(
+                "[gdc_filtration_tools.add_oxog_filters] - Creating tabix index" in serr
+            )
+            self.assertTrue(
+                "[gdc_filtration_tools.add_oxog_filters] - Processed 4 records - Tagged 1; Wrote 4"
+                in serr
+            )
             self.assertTrue("[gdc_filtration_tools.main] - Finished!" in serr)
         finally:
             cleanup_files(fn)
