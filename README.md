@@ -25,7 +25,7 @@ Adds 'oxog' filter tag to VCFs.
 positional arguments:
   input_vcf     The full input VCF file to filter.
   input_dtoxog  The dtoxog VCF from dtoxog-maf-to-vcf used to annotate the full input VCF.
-  output_vcf    The output filtered VCF file to create.     BGzip and tabix-index created if ends with '.gz'.
+  output_vcf    The output filtered VCF file to create. BGzip and tabix-index created if ends with '.gz'.
 
 optional arguments:
   -h, --help    show this help message and exit
@@ -88,7 +88,7 @@ Transforms dToxoG MAF to minimal VCF of only dtoxo failures.
 positional arguments:
   input_maf     The annotated dtoxog MAF output file.
   reference_fa  Reference fasta used to make seqdict header.
-  output_vcf    The output minimal VCF with only failed dtoxog records     BGzip and tabix-index created if ends with '.gz'.
+  output_vcf    The output minimal VCF with only failed dtoxog records. BGzip and tabix-index created if ends with '.gz'.
 
 optional arguments:
   -h, --help    show this help message and exit
@@ -139,7 +139,7 @@ in the contig lines of the VCF header.
 
 positional arguments:
   input_vcf   The input VCF file to filter.
-  output_vcf  The output filtered VCF file to create.     BGzip and tabix-index created if ends with '.gz'.
+  output_vcf  The output filtered VCF file to create. BGzip and tabix-index created if ends with '.gz'.
 
 optional arguments:
   -h, --help  show this help message and exit
@@ -159,7 +159,7 @@ the VCF is SNP-only is done.
 
 positional arguments:
   input_vcf   The input SNP-only VCF file to filter.
-  output_vcf  The output filtered VCF file to create.     BGzip and tabix-index created if ends with '.gz'.
+  output_vcf  The output filtered VCF file to create. BGzip and tabix-index created if ends with '.gz'.
 
 optional arguments:
   -h, --help  show this help message and exit
@@ -179,7 +179,7 @@ Filters SomaticSniper VCF files based on the Somatic Score.
 
 positional arguments:
   input_vcf             The input VCF file to filter.
-  output_vcf            The output filtered VCF file to create.     BGzip and tabix-index created if ends with '.gz'.
+  output_vcf            The output filtered VCF file to create. BGzip and tabix-index created if ends with '.gz'.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -190,7 +190,7 @@ optional arguments:
                         If the somatic score is < this, remove it.
                         (default: 25)
   -m MIN_SOMATIC_SCORE, --min-somatic-score MIN_SOMATIC_SCORE
-                        If the somatic score is > drop_somatic_score                               and < this value, add ssc filter tag.
+                        If the somatic score is > drop_somatic_score and < this value, add ssc filter tag.
                         (default: 40)
 ```
 

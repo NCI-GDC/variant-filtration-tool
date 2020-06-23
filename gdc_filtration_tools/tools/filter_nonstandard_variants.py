@@ -18,8 +18,7 @@ def filter_nonstandard_variants(input_vcf: str, output_vcf: str) -> None:
     the VCF is SNP-only is done.
 
     :param input_vcf: The input SNP-only VCF file to filter.
-    :param output_vcf: The output filtered VCF file to create. \
-    BGzip and tabix-index created if ends with '.gz'.
+    :param output_vcf: The output filtered VCF file to create. BGzip and tabix-index created if ends with '.gz'.
     """
     logger = Logger.get_logger("filter_nonstandard_variants")
     logger.info("Drops non-ACTG loci from a SNP-only VCF.")

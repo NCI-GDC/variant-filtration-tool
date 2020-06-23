@@ -16,8 +16,7 @@ def add_oxog_filters(input_vcf: str, input_dtoxog: str, output_vcf: str) -> None
 
     :param input_vcf: The full input VCF file to filter.
     :param input_dtoxog: The dtoxog VCF from dtoxog-maf-to-vcf used to annotate the full input VCF.
-    :param output_vcf: The output filtered VCF file to create. \
-    BGzip and tabix-index created if ends with '.gz'.
+    :param output_vcf: The output filtered VCF file to create. BGzip and tabix-index created if ends with '.gz'.
     """
     logger = Logger.get_logger("add_oxog_filters")
     logger.info("Adds dtoxog filters to VCF.")

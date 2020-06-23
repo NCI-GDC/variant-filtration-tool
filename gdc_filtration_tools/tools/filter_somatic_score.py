@@ -22,12 +22,10 @@ def filter_somatic_score(
     Filters SomaticSniper VCF files based on the Somatic Score.
 
     :param input_vcf: The input VCF file to filter.
-    :param output_vcf: The output filtered VCF file to create. \
-    BGzip and tabix-index created if ends with '.gz'.
+    :param output_vcf: The output filtered VCF file to create. BGzip and tabix-index created if ends with '.gz'.
     :param tumor_sample_name: The name of the tumor sample in the VCF.
     :param drop_somatic_score: If the somatic score is < this, remove it.
-    :param min_somatic_score: If the somatic score is > drop_somatic_score \
-                              and < this value, add ssc filter tag.
+    :param min_somatic_score: If the somatic score is > drop_somatic_score and < this value, add ssc filter tag.
     """
     logger = Logger.get_logger("filter_somatic_score")
     logger.info("Filters SomaticSniper VCF files based on Somatic Score.")

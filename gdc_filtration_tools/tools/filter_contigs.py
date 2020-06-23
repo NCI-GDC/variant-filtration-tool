@@ -15,8 +15,7 @@ def filter_contigs(input_vcf: str, output_vcf: str):
     in the contig lines of the VCF header.
 
     :param input_vcf: The input VCF file to filter.
-    :param output_vcf: The output filtered VCF file to create. \
-    BGzip and tabix-index created if ends with '.gz'.
+    :param output_vcf: The output filtered VCF file to create. BGzip and tabix-index created if ends with '.gz'.
     """
     logger = Logger.get_logger("filter_contigs")
     logger.info("Filter VCF for contigs not in header.")

@@ -73,8 +73,7 @@ def dtoxog_maf_to_vcf(input_maf: str, reference_fa: str, output_vcf: str) -> Non
 
     :param input_maf: The annotated dtoxog MAF output file. 
     :param reference_fa: Reference fasta used to make seqdict header.
-    :param output_vcf: The output minimal VCF with only failed dtoxog records \
-    BGzip and tabix-index created if ends with '.gz'.
+    :param output_vcf: The output minimal VCF with only failed dtoxog records BGzip and tabix-index created if ends with '.gz'.
     """
     logger = Logger.get_logger("dtoxog_maf_to_vcf")
     logger.info("Transforms dToxoG MAF to minimal VCF of dtoxo failures")
