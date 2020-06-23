@@ -1,4 +1,4 @@
-FROM python:3.5
+FROM python:3.6
 
 # Copy source
 COPY ./utils variant-filtration-tool/
