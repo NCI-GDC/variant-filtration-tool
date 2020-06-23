@@ -1,0 +1,5 @@
+#version 2.4.1
+## OxoG Filter v3
+Chromosome	Start_position	Reference_Allele	Tumor_Seq_Allele1	oxoGCut
+chr1	10	A	T	1
+chr1	20	C	G	0
