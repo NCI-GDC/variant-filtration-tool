@@ -18,7 +18,6 @@ from gdc_filtration_tools.tools.filter_nonstandard_variants import (
 from gdc_filtration_tools.tools.create_oxog_intervals import create_oxog_intervals
 from gdc_filtration_tools.tools.create_dtoxog_maf import create_dtoxog_maf
 from gdc_filtration_tools.tools.dtoxog_maf_to_vcf import dtoxog_maf_to_vcf
-from gdc_filtration_tools.tools.add_oxog_filters import add_oxog_filters
 
 
 def main(args: List[str] = None) -> None:
@@ -29,18 +28,17 @@ def main(args: List[str] = None) -> None:
 
     logger = Logger.get_logger("main")
     funcs = [
-        filter_contigs,
+        add_oxog_filters,
+        create_dtoxog_maf,
+        create_oxog_intervals,
+        dtoxog_maf_to_vcf,
         extract_oxoq_from_sqlite,
+        filter_contigs,
+        filter_nonstandard_variants,
+        filter_somatic_score,
         format_gdc_vcf,
         format_pindel_vcf,
         position_filter_dkfz,
-        filter_somatic_score,
-        add_oxog_filters,
-        filter_nonstandard_variants,
-        create_oxog_intervals,
-        create_dtoxog_maf,
-        dtoxog_maf_to_vcf,
-        add_oxog_filters,
     ]
     defopt.run(funcs, argv=args if args is not None else sys.argv[1:])
     logger.info("Finished!")
