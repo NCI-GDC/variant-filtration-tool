@@ -284,8 +284,9 @@ def create_dtoxog_maf(
                 maf_record = generate_maf_record(
                     record, fasta_reader, oxog, oxoq_score, logger
                 )
-                row = list([maf_record[i] for i in MAF_COLUMNS])
-                o.write("\t".join(row) + "\n")
+                if maf_record is not None:
+                    row = list([maf_record[i] for i in MAF_COLUMNS])
+                    o.write("\t".join(row) + "\n")
 
     finally:
         vcf_reader.close()
