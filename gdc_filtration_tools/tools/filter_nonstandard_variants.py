@@ -14,15 +14,13 @@ ALLOWED_BASES = {"A", "C", "T", "G"}
 
 def filter_nonstandard_variants(input_vcf: str, output_vcf: str) -> None:
     """
-    Remove non-ACTG loci from a *SNP-ONLY* VCF. No validation that
-    the VCF is SNP-only is done.
+    Remove non-ACTG loci from a VCF.
 
-    :param input_vcf: The input SNP-only VCF file to filter.
+    :param input_vcf: The input VCF file to filter.
     :param output_vcf: The output filtered VCF file to create. BGzip and tabix-index created if ends with '.gz'.
     """
     logger = Logger.get_logger("filter_nonstandard_variants")
-    logger.info("Drops non-ACTG loci from a SNP-only VCF.")
-    logger.warning("Expects a SNP-Only VCF!!")
+    logger.info("Drops non-ACTG loci from a VCF.")
 
     # setup
     total = 0
@@ -40,7 +38,7 @@ def filter_nonstandard_variants(input_vcf: str, output_vcf: str) -> None:
     try:
         for record in reader.fetch():
             total += 1
-            alleles = list(record.alleles)
+            alleles = list(''.join(list(record.alleles)).upper())
             check = set(alleles) - ALLOWED_BASES
             if check:
                 logger.warning(

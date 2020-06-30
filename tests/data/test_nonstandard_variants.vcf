@@ -8,3 +8,4 @@
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
 chr1	1	.	A	C	.	PASS	.
 chr2	1	.	A	R	.	PASS	.
+chr3	1	.	A	AC	.	PASS	.
