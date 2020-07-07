@@ -5,9 +5,13 @@ RUN apt-get update \
   && apt-get autoremove -y \
   && rm -rf /var/lib/apt/lists/*
 
-# Copy source
-COPY . variant-filtration-tool/
-WORKDIR /variant-filtration-tool
+COPY ./dist /opt
 
-# Install
-RUN pip3 install .
+RUN make -c /opt init-pip \
+  && ln -s /opt/bin/gdc-filtration-tools /bin/gdc-filtration-tools
+
+WORKDIR /opt
+
+ENTRYPOINT ["/bin/gdc-filtration-tools"]
+
+CMD ["--help"]
