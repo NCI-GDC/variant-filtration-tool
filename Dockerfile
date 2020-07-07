@@ -7,8 +7,8 @@ RUN apt-get update \
 
 COPY ./dist /opt
 
-RUN make -c /opt init-pip \
-  && ln -s /opt/bin/gdc-filtration-tools /bin/gdc-filtration-tools
+RUN make -C /opt init-pip \
+  && ln -s /opt/bin/gdc_filtration_tools /bin/gdc_filtration_tools
 
 WORKDIR /opt
 
