@@ -271,4 +271,3 @@ optional arguments:
 
 **variant-filtration-tool** <br />
 Repository: https://quay.io/ncigdc/variant-filtration-tool <br />
-Tag: 0.1 <br />
