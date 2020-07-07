@@ -9,12 +9,12 @@
 
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
+from typing import Any, List, NewType, Tuple
+
 import pysam
-from typing import NewType, List, Tuple, Any
 
 from gdc_filtration_tools.logger import Logger
 from gdc_filtration_tools.utils import get_pysam_outmode
-
 
 VariantHeaderT = NewType("VariantHeaderT", pysam.VariantHeader)
 VariantRecordT = NewType("VariantRecordT", pysam.VariantRecord)
@@ -113,10 +113,10 @@ def format_pindel_vcf(input_vcf: str, output_vcf: str) -> None:
             flag = tgt == (0, 0)
             if flag:
                 record.samples["TUMOR"]["GT"] = (0, 1)
-            ## Info
+            # Info
             new_info = get_info(record, flag)
 
-            ## New record
+            # New record
             new_record = writer.new_record()
             new_record.contig = record.contig
             new_record.alleles = record.alleles

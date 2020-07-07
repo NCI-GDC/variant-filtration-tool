@@ -10,13 +10,13 @@ metadata attributes:
 
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
-import pysam
 import datetime
 from typing import NewType
 
+import pysam
+
 from gdc_filtration_tools.logger import Logger
 from gdc_filtration_tools.utils import get_pysam_outmode
-
 
 VariantFileT = NewType("VariantFileT", pysam.VariantFile)
 VcfHeaderT = NewType("VcfHeaderT", pysam.VariantHeader)
@@ -90,7 +90,7 @@ def format_gdc_vcf(
     normal_aliquot_uuid: str,
     normal_bam_uuid: str,
     *,
-    reference_name: str = "GRCh38.d1.vd1.fa"
+    reference_name: str = "GRCh38.d1.vd1.fa",
 ) -> None:
     """
     Adds VCF header metadata specific to the GDC.

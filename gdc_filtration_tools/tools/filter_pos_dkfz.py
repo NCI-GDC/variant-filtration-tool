@@ -16,7 +16,7 @@ def position_filter_dkfz(input_vcf: str, output_vcf: str) -> None:
     Removes VCF records where the POS-2 is less than 0 which
     will cause an Exception to be thrown in DKFZBiasFilter. We
     assume that the input VCF only contains SNPs, but no assertions
-    are made to validate this. 
+    are made to validate this.
 
     :param input_vcf: The input VCF file to filter.
     :param output_vcf: The output filtered VCF file to create. BGzip and tabix-index created if ends with '.gz'.

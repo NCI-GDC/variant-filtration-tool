@@ -12,10 +12,10 @@ from gdc_filtration_tools.logger import Logger
 def create_oxog_intervals(input_vcf: str, output_file: str) -> None:
     """
     Takes a SNP-only VCF file and creates an interval list for
-    use by the Broad oxog metrics tool. 
+    use by the Broad oxog metrics tool.
 
     :param input_vcf: The input SNP-only VCF file to extract intervals from.
-    :param output_file: The output interval list to create. 
+    :param output_file: The output interval list to create.
     """
     logger = Logger.get_logger("create_oxog_intervals")
     logger.info("Extracts interval-file for Broad OxoG metrics from VCF.")
