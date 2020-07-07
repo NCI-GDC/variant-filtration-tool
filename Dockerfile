@@ -12,6 +12,6 @@ RUN make -C /opt init-pip \
 
 WORKDIR /opt
 
-ENTRYPOINT ["/bin/gdc-filtration-tools"]
+ENTRYPOINT ["/bin/gdc_filtration_tools"]
 
 CMD ["--help"]
