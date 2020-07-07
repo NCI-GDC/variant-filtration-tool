@@ -1,15 +1,15 @@
 """Tests the ``gdc_filtration_tools.tools.format_gdc_vcf`` module.
 """
-import unittest
-import pysam
-import tempfile
-import attr
 import datetime
+import tempfile
+import unittest
 
-from utils import get_test_data_path, cleanup_files, captured_output
+import attr
+import pysam
 
-from gdc_filtration_tools.tools.format_gdc_vcf import format_gdc_vcf, build_header
 from gdc_filtration_tools.__main__ import main
+from gdc_filtration_tools.tools.format_gdc_vcf import build_header, format_gdc_vcf
+from tests.utils import captured_output, cleanup_files, get_test_data_path
 
 
 @attr.s

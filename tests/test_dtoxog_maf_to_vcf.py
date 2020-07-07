@@ -1,18 +1,18 @@
 """Tests the ``gdc_filtration_tools.tools.dtoxog_maf_to_vcf`` module.
 """
-import unittest
-import pysam
 import tempfile
+import unittest
 
-from utils import get_test_data_path, cleanup_files, captured_output
+import pysam
 
+from gdc_filtration_tools.__main__ import main
 from gdc_filtration_tools.tools.dtoxog_maf_to_vcf import (
-    generate_header,
-    maf_generator,
     build_new_record,
     dtoxog_maf_to_vcf,
+    generate_header,
+    maf_generator,
 )
-from gdc_filtration_tools.__main__ import main
+from tests.utils import captured_output, cleanup_files, get_test_data_path
 
 
 class TestDtoxogMafToVcf(unittest.TestCase):

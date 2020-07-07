@@ -1,22 +1,22 @@
 """Tests the ``gdc_filtration_tools.tools.create_dtoxog_maf`` module.
 """
-import unittest
-import pysam
 import tempfile
+import unittest
 
-from utils import get_test_data_path, cleanup_files, captured_output
+import pysam
 
+from gdc_filtration_tools.__main__ import main
 from gdc_filtration_tools.tools.create_dtoxog_maf import (
+    MAF_COLUMNS,
     create_dtoxog_maf,
-    load_oxog,
     extract_alt,
-    has_nonstandard_alleles,
-    get_context,
     extract_maf_oxog_values,
     generate_maf_record,
-    MAF_COLUMNS,
+    get_context,
+    has_nonstandard_alleles,
+    load_oxog,
 )
-from gdc_filtration_tools.__main__ import main
+from tests.utils import captured_output, cleanup_files, get_test_data_path
 
 
 # test_oxog_ref.fa

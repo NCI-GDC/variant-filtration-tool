@@ -1,13 +1,13 @@
 """Tests the ``gdc_filtration_tools.tools.test_filter_pos_dkfz`` module.
 """
-import unittest
-import pysam
 import tempfile
+import unittest
 
-from utils import get_test_data_path, cleanup_files, captured_output
+import pysam
 
-from gdc_filtration_tools.tools.filter_pos_dkfz import position_filter_dkfz
 from gdc_filtration_tools.__main__ import main
+from gdc_filtration_tools.tools.filter_pos_dkfz import position_filter_dkfz
+from tests.utils import captured_output, cleanup_files, get_test_data_path
 
 
 class TestFilterPosDkfz(unittest.TestCase):
