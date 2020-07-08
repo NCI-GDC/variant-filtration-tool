@@ -13,6 +13,11 @@ DOCKER_REPO := quay.io/ncigdc
 DOCKER_IMAGE := ${DOCKER_REPO}/${REPO}:${LONG_VERSION}
 DOCKER_IMAGE_COMMIT := ${DOCKER_REPO}/${REPO}:${COMMIT_HASH}
 DOCKER_IMAGE_LATEST := ${DOCKER_REPO}/${REPO}:latest
+DOCKER_IMAGE_LATEST := ${DOCKER_REPO}/${REPO}:staging
+
+.PHONY: docker-login
+docker-login:
+	docker login -u="${QUAY_USERNAME}" -p="${QUAY_PASSWORD}" quay.io
 
 .PHONY: version version-*
 version:
@@ -99,4 +104,16 @@ test-docker:
 	@echo
 	@echo -- Running Docker Test --
 	docker run --rm ${DOCKER_IMAGE_LATEST} test
+
+.PHONY: publish-*
+
+publish-staging: docker-login
+	docker tag ${DOCKER_IMAGE_LATEST} ${DOCKER_IMAGE_STAGING}
+	docker push ${DOCKER_IMAGE_COMMIT}
+	docker push ${DOCKER_IMAGE_LATEST}
+	docker push ${DOCKER_IMAGE_STAGING}
+
+publish-release: docker-login
+	docker tag ${DOCKER_IMAGE_LATEST} ${DOCKER_IMAGE}
+	docker push ${DOCKER_IMAGE}
 
