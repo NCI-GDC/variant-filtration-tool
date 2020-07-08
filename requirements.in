@@ -1,0 +1,8 @@
+pysam>=0.16.0
+defopt
+flake8
+isort
+mock
+pre-commit
+pytest
+pytest-cov

@@ -9,7 +9,6 @@ from typing import NewType
 
 from gdc_filtration_tools.logger import Logger
 
-
 Cursor = NewType("Cursor", sqlite3.Cursor)
 
 
@@ -17,7 +16,7 @@ def get_oxoq(cur: Cursor, context: str, table: str, input_state: str) -> float:
     """
     Extracts the OxoQ value from the sqlite cursor.
     """
-    ## Setup
+    # Setup
     N = 0
     NTOT = 0
     NALTOXO = 0
@@ -53,14 +52,14 @@ def extract_oxoq_from_sqlite(
     *,
     context: str = "CCG",
     table: str = "picard_CollectOxoGMetrics",
-    input_state: str = "markduplicates_readgroups"
+    input_state: str = "markduplicates_readgroups",
 ) -> None:
     """
     Extract the OXOQ score for a particular context from the GDC
     harmonization metrics SQLite file. The score is printed to
     stdout.
 
-    :param db_file: Path to the SQLite db file. 
+    :param db_file: Path to the SQLite db file.
     :param context: The nucleotide context of interest.
     :param table: The SQLite table name.
     :param input_state: The input state to select for in the input_state column.

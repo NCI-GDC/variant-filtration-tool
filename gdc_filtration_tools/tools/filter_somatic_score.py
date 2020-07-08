@@ -16,7 +16,7 @@ def filter_somatic_score(
     *,
     tumor_sample_name: str = "TUMOR",
     drop_somatic_score: int = 25,
-    min_somatic_score: int = 40
+    min_somatic_score: int = 40,
 ) -> None:
     """
     Filters SomaticSniper VCF files based on the Somatic Score.

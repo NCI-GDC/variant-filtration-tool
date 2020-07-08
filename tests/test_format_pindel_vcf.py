@@ -1,18 +1,18 @@
 """Tests the ``gdc_filtration_tools.tools.format_pindel_vcf`` module.
 """
-import unittest
-import pysam
 import tempfile
+import unittest
+
 import attr
+import pysam
 
-from utils import get_test_data_path, cleanup_files, captured_output
-
+from gdc_filtration_tools.__main__ import main
 from gdc_filtration_tools.tools.format_pindel_vcf import (
     format_pindel_vcf,
     get_header,
     get_info,
 )
-from gdc_filtration_tools.__main__ import main
+from tests.utils import captured_output, cleanup_files, get_test_data_path
 
 
 @attr.s

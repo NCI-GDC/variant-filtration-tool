@@ -1,15 +1,15 @@
 """Tests the ``gdc_filtration_tools.tools.filter_nonstandard_variants`` module.
 """
-import unittest
-import pysam
 import tempfile
+import unittest
 
-from utils import get_test_data_path, cleanup_files, captured_output
+import pysam
 
+from gdc_filtration_tools.__main__ import main
 from gdc_filtration_tools.tools.filter_nonstandard_variants import (
     filter_nonstandard_variants,
 )
-from gdc_filtration_tools.__main__ import main
+from tests.utils import captured_output, cleanup_files, get_test_data_path
 
 
 class TestFilterNonstandardVariants(unittest.TestCase):

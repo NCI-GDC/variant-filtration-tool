@@ -1,13 +1,13 @@
 """Tests the ``gdc_filtration_tools.tools.add_oxog_filters`` module.
 """
-import unittest
-import pysam
 import tempfile
+import unittest
 
-from utils import get_test_data_path, cleanup_files, captured_output
+import pysam
 
-from gdc_filtration_tools.tools.add_oxog_filters import add_oxog_filters
 from gdc_filtration_tools.__main__ import main
+from gdc_filtration_tools.tools.add_oxog_filters import add_oxog_filters
+from tests.utils import captured_output, cleanup_files, get_test_data_path
 
 
 class TestAddOxogFilters(unittest.TestCase):

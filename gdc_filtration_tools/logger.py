@@ -1,5 +1,5 @@
 """
-Module for custom logging in gdc-filtration-tools 
+Module for custom logging in gdc-filtration-tools
 """
 import logging
 import sys

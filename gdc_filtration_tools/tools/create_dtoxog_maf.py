@@ -3,10 +3,11 @@ This code was adapted from the PCAWG efforts.
 
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
-import pysam
 import csv
 import logging
-from typing import NewType, Tuple, Dict
+from typing import Dict, NewType, Tuple
+
+import pysam
 
 from gdc_filtration_tools.logger import Logger
 
@@ -252,10 +253,10 @@ def create_dtoxog_maf(
 ) -> None:
     """
     Takes a SNP-only VCF file and converts it to the dToxoG MAF format
-    which includes the OXOQ value. 
+    which includes the OXOQ value.
 
-    :param input_vcf: The input SNP-only VCF file to convert to dToxoG MAF. 
-    :param output_file: The output MAF file to create. 
+    :param input_vcf: The input SNP-only VCF file to convert to dToxoG MAF.
+    :param output_file: The output MAF file to create.
     :param reference: Faidx indexed reference fasta file.
     :param oxog_file: Metrics file output from GATK OxoGMetrics tool.
     :param oxoq_score: The oxoQ score.

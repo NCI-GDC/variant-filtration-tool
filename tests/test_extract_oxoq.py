@@ -1,12 +1,13 @@
 """Tests the ``gdc_filtration_tools.tools.extract_oxoq`` module.
 """
-import unittest
-import attr
 import sqlite3
 import tempfile
+import unittest
 
-from gdc_filtration_tools.tools.extract_oxoq import get_oxoq, extract_oxoq_from_sqlite
-from utils import cleanup_files, captured_output
+import attr
+
+from gdc_filtration_tools.tools.extract_oxoq import extract_oxoq_from_sqlite, get_oxoq
+from tests.utils import captured_output, cleanup_files
 
 
 @attr.s
