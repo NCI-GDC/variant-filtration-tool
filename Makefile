@@ -1,5 +1,5 @@
 VERSION = 1.0.0
-REPO = variant-filtration-tools
+REPO = variant-filtration-tool
 MODULE = gdc_filtration_tools
 BRANCH_NAME?=unknown
 
