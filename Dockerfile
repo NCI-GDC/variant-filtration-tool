@@ -7,10 +7,11 @@ RUN apt-get update \
 
 COPY ./dist /opt
 
-RUN make -C /opt init-pip \
-  && ln -s /opt/bin/gdc_filtration_tools /bin/gdc_filtration_tools
-
 WORKDIR /opt
+
+RUN make init-pip \
+  && python setup.py install \
+  && ln -s /opt/bin/gdc_filtration_tools /bin/gdc_filtration_tools
 
 ENTRYPOINT ["/bin/gdc_filtration_tools"]
 
