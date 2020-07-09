@@ -8,7 +8,7 @@ install: make build
 stages:
 - name: build
 - name: publish
-  if: branch = master
+  if: branch = master AND type != pull_request
 - name: publish-staging
   if: branch != master
 jobs:
