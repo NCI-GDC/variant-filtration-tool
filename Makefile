@@ -112,11 +112,11 @@ test-docker:
 publish-staging: docker-login
 	docker tag ${DOCKER_IMAGE_LATEST} ${DOCKER_IMAGE_STAGING}
 	docker push ${DOCKER_IMAGE_COMMIT}
-	docker push ${DOCKER_IMAGE_LATEST}
 	docker push ${DOCKER_IMAGE_STAGING}
 
 publish-release: docker-login
 	docker tag ${DOCKER_IMAGE_LATEST} ${DOCKER_IMAGE_PRODUCTION}
 	docker push ${DOCKER_IMAGE}
+	docker push ${DOCKER_IMAGE_LATEST}
 	docker push ${DOCKER_IMAGE_PRODUCTION}
 
