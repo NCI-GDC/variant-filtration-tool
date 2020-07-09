@@ -1,16 +1,21 @@
 language: python
 python:
 - '3.6'
+
 services: docker
+
 git:
   depth: false
+
 install: make build
+
 stages:
 - name: build
 - name: publish
   if: branch = master AND type != pull_request
 - name: publish-staging
   if: branch != master
+
 jobs:
   include:
   - stage: build
