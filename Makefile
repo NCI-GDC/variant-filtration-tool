@@ -14,6 +14,7 @@ DOCKER_IMAGE := ${DOCKER_REPO}/${REPO}:${LONG_VERSION}
 DOCKER_IMAGE_COMMIT := ${DOCKER_REPO}/${REPO}:${COMMIT_HASH}
 DOCKER_IMAGE_LATEST := ${DOCKER_REPO}/${REPO}:latest
 DOCKER_IMAGE_STAGING := ${DOCKER_REPO}/${REPO}:staging
+DOCKER_IMAGE_PRODUCTION := ${DOCKER_REPO}/${REPO}:${VERSION}
 
 .PHONY: docker-login
 docker-login:
@@ -115,6 +116,7 @@ publish-staging: docker-login
 	docker push ${DOCKER_IMAGE_STAGING}
 
 publish-release: docker-login
-	docker tag ${DOCKER_IMAGE_LATEST} ${DOCKER_IMAGE}
+	docker tag ${DOCKER_IMAGE_LATEST} ${DOCKER_IMAGE_PRODUCTION}
 	docker push ${DOCKER_IMAGE}
+	docker push ${DOCKER_IMAGE_PRODUCTION}
 
