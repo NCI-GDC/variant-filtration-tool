@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Main entrypoint for application
+# Special arguments:
+## test: run test suite
+## help: display help
+
+# Otherwise, call script with given args
+
+case "$1" in
+	test) python -m pytest tests;;
+	*version) python -m gdc_filtration_tools --version;;
+	*) python -m gdc_filtration_tools $@;;
+esac
