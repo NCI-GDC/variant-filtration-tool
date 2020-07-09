@@ -6,8 +6,8 @@ BRANCH_NAME?=unknown
 GIT_SHORT_HASH:=$(shell git rev-parse --short HEAD)
 
 LONG_VERSION:=$(shell python3 setup.py -q capture_version --semver ${VERSION} --branch ${BRANCH_NAME})
-PYPI_VERSION:=$(shell python3 setup.py -q print_version --pypi)
-COMMIT_HASH:=$(shell python3 setup.py -q print_version --hash)
+PYPI_VERSION = $(shell python3 setup.py -q print_version --pypi)
+COMMIT_HASH = $(shell python3 setup.py -q print_version --hash)
 
 DOCKER_REPO := quay.io/ncigdc
 DOCKER_IMAGE := ${DOCKER_REPO}/${REPO}:${LONG_VERSION}
@@ -44,6 +44,7 @@ init-pip:
 	@echo
 	@echo -- Installing pip packages --
 	pip3 install --no-cache-dir -r requirements.txt
+	python3 setup.py develop
 
 init-hooks:
 	@echo
