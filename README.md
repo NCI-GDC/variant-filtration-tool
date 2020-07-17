@@ -244,6 +244,24 @@ optional arguments:
   -h, --help  show this help message and exit
 ```
 
+### `format-sanger-pindel-vcf`
+
+Formats the Sanger Pindel VCF by filling in the `./.` genotypes to `0/0` for normal and
+`0/1` for tumor.
+
+```
+usage: gdc_filtration_tools format-sanger-pindel-vcf [-h] input_vcf output_vcf
+
+Formats Sanger Pindel VCFs to work better with GDC downstream workflows.
+
+positional arguments:
+  input_vcf   The input VCF file to format.
+  output_vcf  The output formatted VCF file to create. BGzip and tabix-index created if ends with '.gz'.
+
+optional arguments:
+  -h, --help  show this help message and exit
+```
+
 ### `position-filter-dkfz`
 
 Removes VCF records where the POS-2 is less than 0 which
