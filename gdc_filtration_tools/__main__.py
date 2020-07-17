@@ -19,6 +19,7 @@ from gdc_filtration_tools.tools.filter_pos_dkfz import position_filter_dkfz
 from gdc_filtration_tools.tools.filter_somatic_score import filter_somatic_score
 from gdc_filtration_tools.tools.format_gdc_vcf import format_gdc_vcf
 from gdc_filtration_tools.tools.format_pindel_vcf import format_pindel_vcf
+from gdc_filtration_tools.tools.format_sanger_pindel_vcf import format_sanger_pindel_vcf
 
 
 def main(args: List[str] = None) -> None:
@@ -39,6 +40,7 @@ def main(args: List[str] = None) -> None:
         filter_somatic_score,
         format_gdc_vcf,
         format_pindel_vcf,
+        format_sanger_pindel_vcf,
         position_filter_dkfz,
     ]
     defopt.run(

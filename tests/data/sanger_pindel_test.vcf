@@ -1,0 +1,36 @@
+##fileformat=VCFv4.2
+##FILTER=<ID=PASS,Description="All filters passed">
+##FILTER=<ID=FF004,Description="Tum medium read depth strand bias check: Calls In 8% Reads Bt Depth 10 And 200 (inclusive)">
+##FILTER=<ID=FF005,Description="Tum high read depth strand bias check: Calls In 4% Reads > Depth 200">
+##FILTER=<ID=FF006,Description="Small call excessive repeat check: Fail if Length <= 4 and Repeats > 9">
+##FILTER=<ID=FF010,Description="Variant must not exist within the Unmatched Normal Panel">
+##FILTER=<ID=FF012,Description="Germline: When length < 11 and depth > 9, fail if the variant is seen in both 20% of normal reads AND 20% of tumour reads in either pindel or bwa">
+##FILTER=<ID=FF015,Description="No normal calls">
+##FILTER=<ID=FF016,Description="Verify indel condition">
+##FILTER=<ID=FF018,Description="Sufficient Depth: Pass if depth > 10">
+##FORMAT=<ID=FC,Number=1,Type=Integer,Description="Fragment calls">
+##FORMAT=<ID=FD,Number=1,Type=Integer,Description="Fragment depth">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=NB,Number=1,Type=Integer,Description="BWA calls on the negative strand">
+##FORMAT=<ID=ND,Number=1,Type=Integer,Description="BWA mapped reads on the negative strand">
+##FORMAT=<ID=NP,Number=1,Type=Integer,Description="Pindel calls on the negative strand">
+##FORMAT=<ID=NR,Number=1,Type=Integer,Description="Total mapped reads on the negative strand">
+##FORMAT=<ID=NU,Number=1,Type=Integer,Description="Unique calls on the negative strand">
+##FORMAT=<ID=PB,Number=1,Type=Integer,Description="BWA calls on the positive strand">
+##FORMAT=<ID=PD,Number=1,Type=Integer,Description="BWA mapped reads on the positive strand">
+##FORMAT=<ID=PP,Number=1,Type=Integer,Description="Pindel calls on the positive strand">
+##FORMAT=<ID=PR,Number=1,Type=Integer,Description="Total mapped reads on the positive strand">
+##FORMAT=<ID=PU,Number=1,Type=Integer,Description="Unique calls on the positive strand">
+##INFO=<ID=FF017,Number=0,Type=Flag,Description="Variant must not overlap with a simple repeat">
+##INFO=<ID=LEN,Number=1,Type=Integer,Description="Length">
+##INFO=<ID=OLD_VARIANT,Number=.,Type=String,Description="Original chr:pos:ref:alt encoding">
+##INFO=<ID=PC,Number=1,Type=String,Description="Pindel call">
+##INFO=<ID=RE,Number=1,Type=Integer,Description="Range end">
+##INFO=<ID=REP,Number=1,Type=Integer,Description="Change repeat count within range">
+##INFO=<ID=RS,Number=1,Type=Integer,Description="Range start">
+##INFO=<ID=S1,Number=1,Type=Integer,Description="S1">
+##INFO=<ID=S2,Number=1,Type=Float,Description="S2">
+##contig=<ID=chr1,length=248956422>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	NORMAL	TUMOR
+chr1	10	7c794825-35ff-4acc-8d08-94f5e5e2b554	T	TA	20	FF010;FF015;FF018	FF017;LEN=1;PC=I;RE=10;REP=1;RS=9;S1=39;S2=1172.77	GT:PP:NP:PB:NB:PD:ND:PR:NR:PU:NU:FD:FC	./.:8:1:13:2:13:5:13:5:13:2:18:15	./.:4:1:6:1:6:3:6:3:6:1:8:7
+chr1	20	1c5a543d-0382-4d18-9c30-9077ac5fb209	CT	C	60	FF010;FF012;FF015;FF016	FF017;LEN=1;PC=D;RE=20;REP=4;RS=19;S1=10;S2=430.85	GT:PP:NP:PB:NB:PD:ND:PR:NR:PU:NU:FD:FC	./.:3:0:5:3:13:12:13:12:5:3:24:8	./.:1:1:5:3:22:10:22:10:5:3:31:7
