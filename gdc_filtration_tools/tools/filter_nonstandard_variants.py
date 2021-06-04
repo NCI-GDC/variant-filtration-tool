@@ -8,7 +8,6 @@ import pysam
 from gdc_filtration_tools.logger import Logger
 from gdc_filtration_tools.utils import get_pysam_outmode
 
-
 ALLOWED_BASES = {"A", "C", "T", "G"}
 
 
