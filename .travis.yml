@@ -7,7 +7,7 @@ services: docker
 git:
   depth: false
 
-install: make build
+install: make docker-login build
 
 stages:
 - name: build
@@ -20,19 +20,11 @@ jobs:
   include:
   - stage: build
     name: Build
-    script:
-    - make version version-pypi
-    - make test-docker
-  - stage: publish-staging
+    script: echo
+  - stage: publish
     name: Publish staging image
     script:
-    - docker login -u="$QUAY_USERNAME" -p="$QUAY_PASSWORD" quay.io
-    - make publish-staging
-  - stage: publish
-    name: Publish production image
-    script:
-    - docker login -u="$QUAY_USERNAME" -p="$QUAY_PASSWORD" quay.io
-    - make publish-release
+    - make docker-login publish-docker
 env:
   global:
   - BRANCH_NAME=${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}
