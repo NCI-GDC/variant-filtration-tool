@@ -5,6 +5,7 @@ from typing import List
 
 import defopt
 
+from gdc_filtration_tools._version import version
 from gdc_filtration_tools.logger import Logger
 from gdc_filtration_tools.tools.add_oxog_filters import add_oxog_filters
 from gdc_filtration_tools.tools.create_dtoxog_maf import create_dtoxog_maf
@@ -20,9 +21,10 @@ from gdc_filtration_tools.tools.filter_somatic_score import filter_somatic_score
 from gdc_filtration_tools.tools.format_gdc_vcf import format_gdc_vcf
 from gdc_filtration_tools.tools.format_pindel_vcf import format_pindel_vcf
 from gdc_filtration_tools.tools.format_sanger_pindel_vcf import format_sanger_pindel_vcf
+from gdc_filtration_tools.tools.reheader_svaba_vcf import reheader_svaba_vcf
 
 
-def main(args: List[str] = None) -> None:
+def main(args: List[str] = None) -> int:
     """
     Main entrypoint for the CLI.
     """
@@ -43,6 +45,8 @@ def main(args: List[str] = None) -> None:
         format_pindel_vcf,
         format_sanger_pindel_vcf,
         position_filter_dkfz,
+        reheader_svaba_vcf,
+        version,
     ]
     try:
         defopt.run(
@@ -52,19 +56,11 @@ def main(args: List[str] = None) -> None:
             argparse_kwargs={"prog": "gdc_filtration_tools"},
         )
         logger.info("Finished!")
-        exit_code = 0
     except Exception as e:
-        log.exception(e)
+        logger.exception(e)
         exit_code = 1
     return exit_code
 
 
 if __name__ == "__main__":
-    """CLI Entrypoint"""
-    status_code = 0
-    try:
-        status_code = main()
-    except Exception as e:
-        log.exception(e)
-        sys.exit(1)
-    sys.exit(status_code)
+    main()

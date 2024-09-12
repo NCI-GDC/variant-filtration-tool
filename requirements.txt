@@ -6,6 +6,8 @@
 #
 --index-url https://nexus.osdc.io/repository/pypi-all/simple
 
+attrs==24.2.0
+    # via variant-filtration-tool (pyproject.toml)
 click==8.1.7
     # via variant-filtration-tool (pyproject.toml)
 defopt==6.4.0
