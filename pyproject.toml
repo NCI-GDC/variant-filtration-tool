@@ -19,7 +19,8 @@ classifiers = [
 ]
 dynamic = ["version"]
 dependencies = [
-    "click"
+    "click",
+    "pysam",
 ]
 
 [project.optional-dependencies]
