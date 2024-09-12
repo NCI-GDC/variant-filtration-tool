@@ -21,7 +21,7 @@ COPY requirements.txt /gdc_filtration_tools/
 
 WORKDIR /gdc_filtration_tools
 
-RUN pip install --no-deps -r requirements.txt \
+RUN pip install --no-deps --no-binary pysam -r requirements.txt \
 	&& pip install --no-deps *.whl \
 	&& rm -f *.whl requirements.txt
 
