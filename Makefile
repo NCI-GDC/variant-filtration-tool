@@ -119,4 +119,3 @@ publish-release: docker-login
 	docker push ${DOCKER_IMAGE}
 	docker push ${DOCKER_IMAGE_LATEST}
 	docker push ${DOCKER_IMAGE_PRODUCTION}
-

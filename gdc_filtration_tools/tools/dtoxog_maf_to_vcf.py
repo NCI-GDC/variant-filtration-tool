@@ -3,6 +3,7 @@ that failed, and writes them out to a minimal VCF file.
 
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
+
 from typing import Dict, Generator, TextIO
 
 from pysam import FastaFile, VariantFile, VariantHeader, VariantRecord, tabix_index

@@ -3,6 +3,7 @@ in the contig lines of the VCF header.
 
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
+
 import pysam
 
 from gdc_filtration_tools.logger import Logger

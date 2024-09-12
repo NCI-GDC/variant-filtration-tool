@@ -1,5 +1,5 @@
-"""Tests the ``gdc_filtration_tools.tools.dtoxog_maf_to_vcf`` module.
-"""
+"""Tests the ``gdc_filtration_tools.tools.dtoxog_maf_to_vcf`` module."""
+
 import tempfile
 import unittest
 
@@ -47,7 +47,13 @@ class TestDtoxogMafToVcf(unittest.TestCase):
             record = build_new_record(maf, vcf, "oxog")
             self.assertEqual(record.pos, 10)
             self.assertEqual(record.chrom, "chr1")
-            self.assertEqual(record.alleles, ("A", "T",))
+            self.assertEqual(
+                record.alleles,
+                (
+                    "A",
+                    "T",
+                ),
+            )
             self.assertEqual(record.filter.keys(), ["oxog"])
         finally:
             if vcf is not None:
@@ -68,7 +74,13 @@ class TestDtoxogMafToVcf(unittest.TestCase):
             for record in vout:
                 self.assertEqual(record.chrom, "chr1")
                 self.assertEqual(record.pos, 10)
-                self.assertEqual(record.alleles, ("A", "T",))
+                self.assertEqual(
+                    record.alleles,
+                    (
+                        "A",
+                        "T",
+                    ),
+                )
                 self.assertEqual(record.filter.keys(), ["oxog"])
             vout.close()
             serr = stderr.getvalue()
@@ -87,7 +99,13 @@ class TestDtoxogMafToVcf(unittest.TestCase):
             for record in vout:
                 self.assertEqual(record.chrom, "chr1")
                 self.assertEqual(record.pos, 10)
-                self.assertEqual(record.alleles, ("A", "T",))
+                self.assertEqual(
+                    record.alleles,
+                    (
+                        "A",
+                        "T",
+                    ),
+                )
                 self.assertEqual(record.filter.keys(), ["oxog"])
             vout.close()
             serr = stderr.getvalue()
@@ -110,7 +128,13 @@ class TestDtoxogMafToVcf(unittest.TestCase):
             for record in vout:
                 self.assertEqual(record.chrom, "chr1")
                 self.assertEqual(record.pos, 10)
-                self.assertEqual(record.alleles, ("A", "T",))
+                self.assertEqual(
+                    record.alleles,
+                    (
+                        "A",
+                        "T",
+                    ),
+                )
                 self.assertEqual(record.filter.keys(), ["oxog"])
             vout.close()
             serr = stderr.getvalue()

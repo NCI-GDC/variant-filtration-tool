@@ -1,5 +1,5 @@
-"""Tests the ``gdc_filtration_tools.tools.filter_nonstandard_variants`` module.
-"""
+"""Tests the ``gdc_filtration_tools.tools.filter_nonstandard_variants`` module."""
+
 import tempfile
 import unittest
 

@@ -1,5 +1,5 @@
-"""Tests the ``gdc_filtration_tools.tools.create_oxog_intervals`` module.
-"""
+"""Tests the ``gdc_filtration_tools.tools.create_oxog_intervals`` module."""
+
 import tempfile
 import unittest
 

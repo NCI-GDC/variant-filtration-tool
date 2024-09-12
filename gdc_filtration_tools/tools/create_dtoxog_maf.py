@@ -3,6 +3,7 @@ This code was adapted from the PCAWG efforts.
 
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
+
 import csv
 import logging
 from typing import Dict, NewType, Tuple
@@ -249,7 +250,11 @@ def load_oxog(filename: str) -> Dict[str, Tuple[int]]:
 
 
 def create_dtoxog_maf(
-    input_vcf: str, output_file: str, reference: str, oxog_file: str, oxoq_score: float,
+    input_vcf: str,
+    output_file: str,
+    reference: str,
+    oxog_file: str,
+    oxoq_score: float,
 ) -> None:
     """
     Takes a SNP-only VCF file and converts it to the dToxoG MAF format

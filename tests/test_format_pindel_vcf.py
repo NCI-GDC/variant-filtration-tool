@@ -1,5 +1,5 @@
-"""Tests the ``gdc_filtration_tools.tools.format_pindel_vcf`` module.
-"""
+"""Tests the ``gdc_filtration_tools.tools.format_pindel_vcf`` module."""
+
 import tempfile
 import unittest
 

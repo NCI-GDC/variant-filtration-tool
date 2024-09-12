@@ -1,9 +1,10 @@
 """Format Sanger PINDEL VCFs for downstream GDC workflows. This includes:
 
-1. Force NORMAL genotypes to be 0/0 and TUMOR genotypes to be 0/1. 
+1. Force NORMAL genotypes to be 0/0 and TUMOR genotypes to be 0/1.
 
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
+
 import pysam
 
 from gdc_filtration_tools.logger import Logger

@@ -1,11 +1,12 @@
 """Format SvABA VCFs for downstream GDC workflows. This includes:
 
 TODO:
-1. 
+1.
 2.
 
 @author: Linghao Song <linghao@uchicago.edu>
 """
+
 import pysam
 
 from gdc_filtration_tools.logger import Logger

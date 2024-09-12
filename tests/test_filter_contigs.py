@@ -1,5 +1,5 @@
-"""Tests the ``gdc_filtration_tools.tools.filter_contigs`` module.
-"""
+"""Tests the ``gdc_filtration_tools.tools.filter_contigs`` module."""
+
 import tempfile
 import unittest
 

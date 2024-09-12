@@ -1,5 +1,5 @@
-"""Tests the ``gdc_filtration_tools.tools.add_oxog_filters`` module.
-"""
+"""Tests the ``gdc_filtration_tools.tools.add_oxog_filters`` module."""
+
 import tempfile
 import unittest
 
@@ -24,7 +24,11 @@ class TestAddOxogFilters(unittest.TestCase):
                 if (
                     record.contig == "chr1"
                     and record.pos == 10
-                    and record.alleles == ("A", "T",)
+                    and record.alleles
+                    == (
+                        "A",
+                        "T",
+                    )
                 ):
                     self.assertEqual(record.filter.keys(), ["oxog"])
                 else:
@@ -48,7 +52,11 @@ class TestAddOxogFilters(unittest.TestCase):
                 if (
                     record.contig == "chr1"
                     and record.pos == 10
-                    and record.alleles == ("A", "T",)
+                    and record.alleles
+                    == (
+                        "A",
+                        "T",
+                    )
                 ):
                     self.assertEqual(record.filter.keys(), ["oxog"])
                 else:

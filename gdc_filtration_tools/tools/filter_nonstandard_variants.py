@@ -3,11 +3,11 @@ problems with downstream tools.
 
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
+
 import pysam
 
 from gdc_filtration_tools.logger import Logger
 from gdc_filtration_tools.utils import get_pysam_outmode
-
 
 ALLOWED_BASES = {"A", "C", "T", "G"}
 
@@ -38,7 +38,7 @@ def filter_nonstandard_variants(input_vcf: str, output_vcf: str) -> None:
     try:
         for record in reader.fetch():
             total += 1
-            alleles = list(''.join(list(record.alleles)).upper())
+            alleles = list("".join(list(record.alleles)).upper())
             check = set(alleles) - ALLOWED_BASES
             if check:
                 logger.warning(

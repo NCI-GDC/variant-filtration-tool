@@ -4,6 +4,7 @@ than drop_somatic_score but less than min_somatic_score.
 
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
+
 import pysam
 
 from gdc_filtration_tools.logger import Logger

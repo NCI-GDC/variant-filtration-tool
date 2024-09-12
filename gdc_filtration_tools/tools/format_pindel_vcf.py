@@ -9,6 +9,7 @@
 
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
+
 from typing import Any, List, NewType, Tuple
 
 import pysam

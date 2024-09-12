@@ -4,6 +4,7 @@ it mutates the header to add the 'oxog' filter metadata.
 
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
+
 import pysam
 
 from gdc_filtration_tools.logger import Logger

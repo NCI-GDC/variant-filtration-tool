@@ -1,4 +1,5 @@
 """Tests the ``gdc_filtration_tools.utils` package."""
+
 import unittest
 
 from gdc_filtration_tools.utils import get_pysam_outmode

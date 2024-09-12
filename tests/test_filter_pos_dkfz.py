@@ -1,5 +1,5 @@
-"""Tests the ``gdc_filtration_tools.tools.test_filter_pos_dkfz`` module.
-"""
+"""Tests the ``gdc_filtration_tools.tools.test_filter_pos_dkfz`` module."""
+
 import tempfile
 import unittest
 

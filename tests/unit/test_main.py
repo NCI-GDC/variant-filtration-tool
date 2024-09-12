@@ -3,6 +3,7 @@
 import unittest
 
 from click.testing import CliRunner
+
 from gdc_filtration_tools import __main__ as MOD
 
 

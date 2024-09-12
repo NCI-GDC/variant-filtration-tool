@@ -10,6 +10,7 @@ metadata attributes:
 
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
+
 import datetime
 from typing import NewType
 

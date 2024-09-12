@@ -1,5 +1,5 @@
-"""Tests the ``gdc_filtration_tools.tools.extract_oxoq`` module.
-"""
+"""Tests the ``gdc_filtration_tools.tools.extract_oxoq`` module."""
+
 import sqlite3
 import tempfile
 import unittest

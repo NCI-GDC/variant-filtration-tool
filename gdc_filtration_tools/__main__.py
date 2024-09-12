@@ -12,7 +12,7 @@ import click
 try:
     from gdc_filtration_tools import __version__
 except Exception:
-    __version__ = '0.0.0'
+    __version__ = "0.0.0"
 
 log = logging.getLogger(__name__)
 
