@@ -4,13 +4,13 @@ default_language_version:
 
 repos:
   - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.4.0
+    rev: v1.5.0
     hooks:
       - id: detect-secrets
         args: ['--baseline', '.secrets.baseline']
         exclude: ^(\.cruft\.json)$
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.2.0
+    rev: v4.6.0
     hooks:
       - id: check-yaml
       - id: check-toml
@@ -20,13 +20,13 @@ repos:
       - id: detect-private-key
       - id: end-of-file-fixer
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: 'v0.0.265'
+    rev: 'v0.6.4'
     hooks:
       - id: ruff
         args: [ '--select', 'I', '--fix' ]
       - id: ruff-format
   - repo: https://github.com/cruft/cruft
-    rev: 2.14.0
+    rev: 2.15.0
     hooks:
       - id: cruft
         name: cruft
