@@ -1,7 +1,3 @@
-.deps/
-docker-requirements.txt
-_version.py
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -12,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+env/
 build/
 develop-eggs/
 dist/
@@ -27,7 +24,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
+_version.py
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -49,7 +46,6 @@ nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
-.pytest_cache/
 
 # Translations
 *.mo
@@ -58,7 +54,6 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
-db.sqlite3
 
 # Flask stuff:
 instance/
@@ -85,16 +80,17 @@ celerybeat-schedule
 # SageMath parsed files
 *.sage.py
 
-# Environments
+# dotenv
 .env
+
+# virtualenv
 .venv
-env/
 venv/
 ENV/
-env.bak/
-venv.bak/
+
+# direnv
 .envrc
-.direnv
+.direnv/
 
 # Spyder project settings
 .spyderproject
@@ -111,3 +107,11 @@ venv.bak/
 
 # VSCode
 .vscode/
+test-reports/
+
+# Gitlab CI - automatically created, break flit validation
+vars.env
+gl-code-quality-report.html
+
+# Added in base-container builder image
+aws-lc

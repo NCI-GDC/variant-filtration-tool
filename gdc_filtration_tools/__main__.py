@@ -1,56 +1,81 @@
-"""Main entrypoint for the gdc_filtration_tools package.
+#!/usr/bin/env python
 """
+Python Project Template Entrypoint Script
+"""
+
+import datetime
+import logging
 import sys
-from typing import List
 
-import defopt
+import click
 
-from gdc_filtration_tools.logger import Logger
-from gdc_filtration_tools.tools.add_oxog_filters import add_oxog_filters
-from gdc_filtration_tools.tools.create_dtoxog_maf import create_dtoxog_maf
-from gdc_filtration_tools.tools.create_oxog_intervals import create_oxog_intervals
-from gdc_filtration_tools.tools.dtoxog_maf_to_vcf import dtoxog_maf_to_vcf
-from gdc_filtration_tools.tools.extract_oxoq import extract_oxoq_from_sqlite
-from gdc_filtration_tools.tools.filter_contigs import filter_contigs
-from gdc_filtration_tools.tools.filter_nonstandard_variants import (
-    filter_nonstandard_variants,
+try:
+    from gdc_filtration_tools import __version__
+except Exception:
+    __version__ = '0.0.0'
+
+log = logging.getLogger(__name__)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(name)s:%(lineno)s %(levelname)s | %(message)s",
 )
-from gdc_filtration_tools.tools.filter_pos_dkfz import position_filter_dkfz
-from gdc_filtration_tools.tools.filter_somatic_score import filter_somatic_score
-from gdc_filtration_tools.tools.format_gdc_vcf import format_gdc_vcf
-from gdc_filtration_tools.tools.format_pindel_vcf import format_pindel_vcf
-from gdc_filtration_tools.tools.format_sanger_pindel_vcf import format_sanger_pindel_vcf
 
 
-def main(args: List[str] = None) -> None:
+def run() -> int:
+    """Method for running script logic.
+
+    Accepts:
+        run_args (namespace): Collection of parsed arguments
+    Returns:
+        ret_code (int): Return code for sys.exit()
     """
-    Main entrypoint for the CLI.
-    """
-    Logger.setup_root_logger()
 
-    logger = Logger.get_logger("main")
-    funcs = [
-        add_oxog_filters,
-        create_dtoxog_maf,
-        create_oxog_intervals,
-        dtoxog_maf_to_vcf,
-        extract_oxoq_from_sqlite,
-        filter_contigs,
-        filter_nonstandard_variants,
-        filter_somatic_score,
-        format_gdc_vcf,
-        format_pindel_vcf,
-        format_sanger_pindel_vcf,
-        position_filter_dkfz,
-    ]
-    defopt.run(
-        funcs,
-        argv=args if args is not None else sys.argv[1:],
-        version=True,
-        argparse_kwargs={'prog': 'gdc_filtration_tools'},
-    )
-    logger.info("Finished!")
+    ret_val = 0
+
+    start_time = datetime.datetime.now()
+
+    log.info("Running process...")
+
+    # Log runtime info
+    end_time = datetime.datetime.now()
+    run_time = end_time - start_time
+    log.info("Run time: %d seconds", run_time.seconds)
+    return ret_val
+
+
+@click.command()
+@click.version_option(version=__version__)
+# Add new cli args, e.g.:
+# @click.option("--foo")
+# @click.option("--bar")
+# def main(foo: str, bar: int):
+def main() -> int:
+    """Main Entrypoint."""
+    exit_code = 0
+    args = sys.argv
+
+    log.info("Version: %s", __version__)
+    log.info("Process called with %s", args)
+
+    try:
+        exit_code = run()
+    except Exception as e:
+        log.exception(e)
+        exit_code = 1
+    return exit_code
 
 
 if __name__ == "__main__":
-    main()
+    """CLI Entrypoint"""
+
+    status_code = 0
+    try:
+        status_code = main()
+    except Exception as e:
+        log.exception(e)
+        sys.exit(1)
+    sys.exit(status_code)
+
+
+# __END__
