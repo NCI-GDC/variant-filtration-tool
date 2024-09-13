@@ -10,7 +10,7 @@ from gdc_filtration_tools.logger import Logger
 from gdc_filtration_tools.utils import get_pysam_outmode
 
 
-def filter_contigs(input_vcf: str, output_vcf: str):
+def filter_contigs(input_vcf: str, output_vcf: str) -> None:
     """
     Filter out VCF records on chromosomes that are not present
     in the contig lines of the VCF header.

@@ -4,7 +4,7 @@ that failed, and writes them out to a minimal VCF file.
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
 
-from typing import Dict, Generator, List, TextIO
+from typing import Dict, Generator, List, TextIO, cast
 
 from pysam import FastaFile, VariantFile, VariantHeader, VariantRecord, tabix_index
 
@@ -59,12 +59,15 @@ def build_new_record(maf: Dict[str, str], vcf: VariantFile, tag: str) -> Variant
         maf["Reference_Allele"],
         maf["Tumor_Seq_Allele1"],
     )
-    record = vcf.new_record(
-        contig=str(maf["Chromosome"]),
-        start=int(maf["Start_position"]) - 1,
-        stop=len(maf["Reference_Allele"]) + int(maf["Start_position"]) - 1,
-        filter=(tag,),
-        alleles=alleles,
+    record = cast(
+        VariantRecord,
+        vcf.new_record(
+            contig=str(maf["Chromosome"]),
+            start=int(maf["Start_position"]) - 1,
+            stop=len(maf["Reference_Allele"]) + int(maf["Start_position"]) - 1,
+            filter=(tag,),
+            alleles=alleles,
+        ),
     )
     return record
 

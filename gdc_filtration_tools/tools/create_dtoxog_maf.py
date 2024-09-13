@@ -42,7 +42,7 @@ MAF_COLUMNS = [
 def generate_maf_record(
     record: VariantRecordT,
     fasta: FastaFileT,
-    oxog: Dict[str, Tuple[int]],
+    oxog: Dict[str, Tuple[int, ...]],
     oxoq_score: float,
     logger: LoggerT,
 ) -> Dict[str, str]:
@@ -116,7 +116,7 @@ def generate_maf_record(
 
 
 def extract_maf_oxog_values(
-    pos_key: str, alt_allele: str, ref_allele: str, oxog: Dict[str, Tuple[int]]
+    pos_key: str, alt_allele: str, ref_allele: str, oxog: Dict[str, Tuple[int, ...]]
 ) -> Tuple[int, int, int, int, float]:
     """
     Takes the extracted values from the oxog metrics and calculates
@@ -216,7 +216,7 @@ def extract_alt(alleles: Tuple[str], tumor: VariantRecordSampleT) -> Optional[st
     return alleles[idx]
 
 
-def load_oxog(filename: str) -> Dict[str, Tuple[int]]:
+def load_oxog(filename: str) -> Dict[str, Tuple[int, ...]]:
     """
     Given a path, parse the oxoGMetrics file and load into a dictionary
     of chr:position to prune.
@@ -237,17 +237,19 @@ def load_oxog(filename: str) -> Dict[str, Tuple[int]]:
             T_F2R1 = int(line["F2_T"]) + int(line["R1_T"])
 
             contig = line["contig"]
-            contig = contig.strip(" \t\n\r")
+            contig = str(contig.strip(" \t\n\r"))
 
-            result[contig + ":" + line["position"]] = (
-                A_F1R2,
-                A_F2R1,
-                C_F1R2,
-                C_F2R1,
-                G_F1R2,
-                G_F2R1,
-                T_F1R2,
-                T_F2R1,
+            result[contig + ":" + line["position"]] = tuple(
+                [
+                    A_F1R2,
+                    A_F2R1,
+                    C_F1R2,
+                    C_F2R1,
+                    G_F1R2,
+                    G_F2R1,
+                    T_F1R2,
+                    T_F2R1,
+                ]
             )
     return result
 
