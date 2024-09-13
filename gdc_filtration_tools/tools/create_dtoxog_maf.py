@@ -6,18 +6,16 @@ This code was adapted from the PCAWG efforts.
 
 import csv
 import logging
-from typing import Dict, NewType, Tuple
+from typing import Dict, Optional, Tuple
 
 import pysam
 
 from gdc_filtration_tools.logger import Logger
 
-VariantRecordT = NewType("VariantRecordT", pysam.VariantRecord)
-VariantRecordSampleT = NewType(
-    "VariantRecordSampleT", pysam.libcbcf.VariantRecordSample
-)
-FastaFileT = NewType("FastaFileT", pysam.FastaFile)
-LoggerT = NewType("LoggerT", logging.Logger)
+VariantRecordT = pysam.VariantRecord
+VariantRecordSampleT = pysam.libcbcf.VariantRecordSample
+FastaFileT = pysam.FastaFile
+LoggerT = logging.Logger
 
 POSSIBLE_ALLELES = {"A", "C", "T", "G", "N"}
 
@@ -57,6 +55,7 @@ def generate_maf_record(
 
     # Alleles
     ref_allele = record.ref
+    assert isinstance(record.samples["TUMOR"], str)
     alt_allele = extract_alt(record.alleles, record.samples["TUMOR"])
     if not alt_allele:
         logger.warning(
@@ -64,7 +63,7 @@ def generate_maf_record(
                 record.chrom, record.pos, record.ref, ",".join(list(record.alts))
             )
         )
-        return
+        return None
 
     if has_nonstandard_alleles(ref_allele, alt_allele):
         logger.warning(
@@ -72,7 +71,7 @@ def generate_maf_record(
                 record.chrom, record.pos, record.ref, ",".join(list(record.alts))
             )
         )
-        return
+        return None
 
     # Build
     maf_dat["Chromosome"] = record.chrom
@@ -110,7 +109,8 @@ def generate_maf_record(
         maf_dat["i_t_Foxog"] = str(i_t_Foxog)
     except KeyError as e:
         logger.warning("Unable to find key {}".format(pos_key))
-        return
+        logger.warning(e)
+        return None
 
     return maf_dat
 
@@ -159,7 +159,7 @@ def extract_maf_oxog_values(
 
     Noxog = 0
     Nalt = i_t_ALT_F2R1 + i_t_ALT_F1R2
-    i_t_Foxog = -1
+    i_t_Foxog = -1.0
     if (ref_allele == "C") or (ref_allele == "A"):
         Noxog = i_t_ALT_F2R1
 
@@ -173,7 +173,10 @@ def extract_maf_oxog_values(
 
 
 def get_context(
-    vcf_record: VariantRecordT, fasta: FastaFileT, *, size: int = 10
+    vcf_record: VariantRecordT,
+    fasta: FastaFileT,
+    *,
+    size: int = 10,
 ) -> str:
     """
     Extracts the adjacent bases to the variant.
@@ -182,10 +185,10 @@ def get_context(
     region = "{0}:{1}-{2}".format(
         vcf_record.chrom, max(1, vcf_record.pos - size), vcf_record.pos + size
     )
-    context = None
+    context = ""
     try:
         context = fasta.fetch(region=region)
-    except KeyError as e:
+    except KeyError:
         pass
     return context
 
@@ -197,7 +200,7 @@ def has_nonstandard_alleles(ref_allele: str, alt_allele: str) -> bool:
     return len(set([ref_allele, alt_allele]) - POSSIBLE_ALLELES) > 0
 
 
-def extract_alt(alleles: Tuple[str], tumor: VariantRecordSampleT) -> str:
+def extract_alt(alleles: Tuple[str], tumor: VariantRecordSampleT) -> Optional[str]:
     """
     Extract the ALT allele for tumor sample. This function selects the first
     non-reference allele from the tumor sample.

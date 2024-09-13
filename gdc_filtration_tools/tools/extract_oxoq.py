@@ -6,11 +6,10 @@ metrics SQLite db file.
 
 import sqlite3
 from math import log10
-from typing import NewType
 
 from gdc_filtration_tools.logger import Logger
 
-Cursor = NewType("Cursor", sqlite3.Cursor)
+Cursor = sqlite3.Cursor
 
 
 def get_oxoq(cur: Cursor, context: str, table: str, input_state: str) -> float:

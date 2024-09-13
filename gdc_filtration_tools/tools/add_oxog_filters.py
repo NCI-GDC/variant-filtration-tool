@@ -46,6 +46,7 @@ def add_oxog_filters(input_vcf: str, input_dtoxog: str, output_vcf: str) -> None
             region = "{0}:{1}-{2}".format(record.contig, record.pos, record.pos)
             try:
                 for row in dtoxog_reader.fetch(region=region):
+                    assert isinstance(record.ref, str) and isinstance(row.ref, str)
                     if record.pos == row.pos and record.ref.upper() == row.ref.upper():
                         # Add filter if failed oxog
                         record.filter.add("oxog")

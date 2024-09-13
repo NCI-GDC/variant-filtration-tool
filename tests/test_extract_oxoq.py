@@ -72,7 +72,6 @@ class TestExtractOxoq(unittest.TestCase):
 
     def test_extract_oxoq_from_sqlite(self):
         rec = OxoqRecord("10000", "200", "100", "30.23")
-        exp = 30.23
         (fd, fn) = tempfile.mkstemp()
 
         # Generate test db

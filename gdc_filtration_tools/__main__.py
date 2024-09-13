@@ -5,7 +5,6 @@ from typing import List
 
 import defopt
 
-from gdc_filtration_tools._version import version
 from gdc_filtration_tools.logger import Logger
 from gdc_filtration_tools.tools.add_oxog_filters import add_oxog_filters
 from gdc_filtration_tools.tools.create_dtoxog_maf import create_dtoxog_maf
@@ -24,11 +23,10 @@ from gdc_filtration_tools.tools.format_sanger_pindel_vcf import format_sanger_pi
 from gdc_filtration_tools.tools.reheader_svaba_vcf import reheader_svaba_vcf
 
 
-def main(args: List[str] = None) -> int:
+def main(args: List[str] = None) -> None:
     """
     Main entrypoint for the CLI.
     """
-    exit_code = 0
     Logger.setup_root_logger()
 
     logger = Logger.get_logger("main")
@@ -46,20 +44,14 @@ def main(args: List[str] = None) -> int:
         format_sanger_pindel_vcf,
         position_filter_dkfz,
         reheader_svaba_vcf,
-        version,
     ]
-    try:
-        defopt.run(
-            funcs,
-            argv=args if args is not None else sys.argv[1:],
-            version=True,
-            argparse_kwargs={"prog": "gdc_filtration_tools"},
-        )
-        logger.info("Finished!")
-    except Exception as e:
-        logger.exception(e)
-        exit_code = 1
-    return exit_code
+    defopt.run(
+        funcs,
+        argv=args if args is not None else sys.argv[1:],
+        version=True,
+        argparse_kwargs={"prog": "gdc_filtration_tools"},
+    )
+    logger.info("Finished!")
 
 
 if __name__ == "__main__":

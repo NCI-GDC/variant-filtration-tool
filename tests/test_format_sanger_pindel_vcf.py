@@ -3,7 +3,6 @@
 import tempfile
 import unittest
 
-import attr
 import pysam
 
 from gdc_filtration_tools.__main__ import main

@@ -4,7 +4,7 @@ that failed, and writes them out to a minimal VCF file.
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
 
-from typing import Dict, Generator, TextIO
+from typing import Dict, Generator, List, TextIO
 
 from pysam import FastaFile, VariantFile, VariantHeader, VariantRecord, tabix_index
 
@@ -38,7 +38,7 @@ def maf_generator(fh: TextIO) -> Generator[Dict[str, str], None, None]:
 
     :param fh: MAF file handle.
     """
-    head = []
+    head: List[str] = list()
     for line in fh:
         if line.startswith("#"):
             continue

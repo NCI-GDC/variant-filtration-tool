@@ -3,8 +3,6 @@
 import tempfile
 import unittest
 
-import pysam
-
 from gdc_filtration_tools.__main__ import main
 from gdc_filtration_tools.tools.create_oxog_intervals import create_oxog_intervals
 from tests.utils import captured_output, cleanup_files, get_test_data_path

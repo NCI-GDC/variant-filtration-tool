@@ -12,15 +12,14 @@ metadata attributes:
 """
 
 import datetime
-from typing import NewType
 
 import pysam
 
 from gdc_filtration_tools.logger import Logger
 from gdc_filtration_tools.utils import get_pysam_outmode
 
-VariantFileT = NewType("VariantFileT", pysam.VariantFile)
-VcfHeaderT = NewType("VcfHeaderT", pysam.VariantHeader)
+VariantFileT = pysam.VariantFile
+VcfHeaderT = pysam.VariantHeader
 
 
 def build_header(
