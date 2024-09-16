@@ -131,17 +131,21 @@ def format_pindel_vcf(input_vcf: str, output_vcf: str) -> None:
 
             for i in new_info:
                 new_record.info[i[0]] = i[1]
-            for i, (sample_name, sample_data) in enumerate(record.samples.items()):
-                for k, v in record.samples[sample_name].items():
-                    new_record.samples[i][k] = v
+
+            for sample_name, sample_data in record.samples.items():
+                for k, v in sample_data.items():
+                    new_record.samples[sample_name][k] = v
+            # for i, sample in enumerate(record.samples):
+            #    for k, v in record.samples[sample].items():
+            #        new_record.samples[i][k] = v
             writer.write(new_record)
 
     finally:
         reader.close()
         writer.close()
 
-    if mode == "wz":
+    if output_vcf.endswith(".gz"):
         logger.info("Creating tabix index...")
-        tbx = pysam.tabix_index(output_vcf, preset="vcf", force=True)
+        pysam.tabix_index(output_vcf, preset="vcf", force=True)
 
     logger.info("Processed {} records.".format(total))

@@ -68,9 +68,9 @@ def add_oxog_filters(input_vcf: str, input_dtoxog: str, output_vcf: str) -> None
         writer.close()
         dtoxog_reader.close()
 
-    if mode == "wz":
+    if output_vcf.endswith(".gz"):
         logger.info("Creating tabix index...")
-        tbx = pysam.tabix_index(output_vcf, preset="vcf", force=True)
+        pysam.tabix_index(output_vcf, preset="vcf", force=True)
 
     logger.info(
         "Processed {} records - Tagged {}; Wrote {} ".format(total, tagged, written)

@@ -23,7 +23,7 @@ from gdc_filtration_tools.tools.format_sanger_pindel_vcf import format_sanger_pi
 from gdc_filtration_tools.tools.reheader_svaba_vcf import reheader_svaba_vcf
 
 
-def main(args: List[str] = None) -> None:
+def main(args: List[str] = []) -> None:
     """
     Main entrypoint for the CLI.
     """

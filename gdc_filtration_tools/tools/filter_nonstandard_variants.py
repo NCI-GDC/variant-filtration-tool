@@ -56,9 +56,9 @@ def filter_nonstandard_variants(input_vcf: str, output_vcf: str) -> None:
         reader.close()
         writer.close()
 
-    if mode == "wz":
+    if output_vcf.endswith(".gz"):
         logger.info("Creating tabix index...")
-        tbx = pysam.tabix_index(output_vcf, preset="vcf", force=True)
+        pysam.tabix_index(output_vcf, preset="vcf", force=True)
 
     logger.info(
         "Processed {} records - Removed {}; Wrote {} ".format(total, removed, written)

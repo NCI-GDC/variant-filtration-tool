@@ -4,7 +4,7 @@ Module for custom logging in gdc-filtration-tools
 
 import logging
 import sys
-from typing import Literal, Optional
+from typing import IO, Optional
 
 
 class Logger(object):
@@ -12,7 +12,6 @@ class Logger(object):
 
     RootLogger = logging.getLogger("gdc_filtration_tools")
     LoggerFormat = "[%(levelname)s] [%(asctime)s] [%(name)s] - %(message)s"
-    FileMode = Optional[Literal["r", "w", "wh", "rb", "wb", "wbu", "wb0"]]
 
     @classmethod
     def setup_root_logger(cls) -> None:
@@ -29,7 +28,7 @@ class Logger(object):
     LoggerLevel = logging.INFO
 
     @classmethod
-    def get_logger(cls, name, stream=None) -> logging.Logger:
+    def get_logger(cls, name: str, stream: Optional[IO] = None) -> logging.Logger:
         """Gets a logger with the given name.  If a ``stream`` is not
         provided, the logger will be a child of the root logger, otherwise, a
         new logger is created using the given ``stream``."""

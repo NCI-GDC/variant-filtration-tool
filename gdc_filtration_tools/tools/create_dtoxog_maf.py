@@ -45,7 +45,7 @@ def generate_maf_record(
     oxog: Dict[str, Tuple[int, ...]],
     oxoq_score: float,
     logger: LoggerT,
-) -> Dict[str, str]:
+) -> Optional[Dict[str, str]]:
     """
     Main function for converting the VCF record to dToxoG MAF record
     represented as a dictionary.
@@ -55,20 +55,28 @@ def generate_maf_record(
 
     # Alleles
     ref_allele = record.ref
-    assert isinstance(record.samples["TUMOR"], str)
-    alt_allele = extract_alt(record.alleles, record.samples["TUMOR"])
+    if not ref_allele:
+        return None
+
+    if record.alleles:
+        alt_allele = extract_alt(record.alleles, record.samples["TUMOR"])
     if not alt_allele:
         logger.warning(
             "Unable to extract alt allele! {}:{}:{}:{}".format(
-                record.chrom, record.pos, record.ref, ",".join(list(record.alts))
+                record.chrom,
+                record.pos,
+                record.ref,
+                ",".join(list(record.alts)) if record.alts is not None else "",
             )
         )
         return None
-
     if has_nonstandard_alleles(ref_allele, alt_allele):
         logger.warning(
             "Invalid allele present! {}:{}:{}:{}".format(
-                record.chrom, record.pos, record.ref, ",".join(list(record.alts))
+                record.chrom,
+                record.pos,
+                record.ref,
+                ",".join(list(record.alts)) if record.alts is not None else "",
             )
         )
         return None
@@ -200,7 +208,7 @@ def has_nonstandard_alleles(ref_allele: str, alt_allele: str) -> bool:
     return len(set([ref_allele, alt_allele]) - POSSIBLE_ALLELES) > 0
 
 
-def extract_alt(alleles: Tuple[str], tumor: VariantRecordSampleT) -> Optional[str]:
+def extract_alt(alleles: Tuple[str, ...], tumor: VariantRecordSampleT) -> Optional[str]:
     """
     Extract the ALT allele for tumor sample. This function selects the first
     non-reference allele from the tumor sample.
@@ -213,7 +221,7 @@ def extract_alt(alleles: Tuple[str], tumor: VariantRecordSampleT) -> Optional[st
         idx = [i for i in list(tumor["GT"]) if i][0]
     except IndexError:
         return None
-    return alleles[idx]
+    return str(alleles[idx])
 
 
 def load_oxog(filename: str) -> Dict[str, Tuple[int, ...]]:
@@ -225,8 +233,6 @@ def load_oxog(filename: str) -> Dict[str, Tuple[int, ...]]:
     with open(filename, "rt") as fh:
         reader = csv.DictReader(fh, delimiter="\t")
         for line in reader:
-            ref = line["ref"]
-
             A_F1R2 = int(line["F1_A"]) + int(line["R2_A"])
             A_F2R1 = int(line["F2_A"]) + int(line["R1_A"])
             C_F1R2 = int(line["F1_C"]) + int(line["R2_C"])

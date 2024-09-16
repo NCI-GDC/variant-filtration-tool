@@ -108,8 +108,8 @@ def dtoxog_maf_to_vcf(input_maf: str, reference_fa: str, output_vcf: str) -> Non
     finally:
         writer.close()
 
-    if mode == "wz":
+    if output_vcf.endswith(".gz"):
         logger.info("Creating tabix index...")
-        tbx = tabix_index(output_vcf, preset="vcf", force=True)
+        tabix_index(output_vcf, preset="vcf", force=True)
 
     logger.info("Processed {} records - Wrote {}".format(total, written))

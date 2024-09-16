@@ -11,4 +11,4 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(mode, "w")
 
         mode = get_pysam_outmode("fake.vcf.gz")
-        self.assertEqual(mode, "wz")
+        self.assertEqual(mode, "w")

@@ -16,7 +16,7 @@ docutils==0.21.2
     # via defopt
 pockets==0.9.1
     # via sphinxcontrib-napoleon
-pysam==0.16.0.1
+pysam==0.22.1
     # via variant-filtration-tool (pyproject.toml)
 six==1.16.0
     # via
