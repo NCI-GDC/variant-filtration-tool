@@ -24,3 +24,5 @@ six==1.16.0
     #   sphinxcontrib-napoleon
 sphinxcontrib-napoleon==0.7
     # via defopt
+typing-extensions==4.12.2
+    # via variant-filtration-tool (pyproject.toml)
