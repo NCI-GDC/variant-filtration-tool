@@ -9,7 +9,7 @@ WORKDIR /gdc_filtration_tools
 
 RUN pip install tox && tox -e build
 
-FROM ${REGISTRY}/python3.9:${BASE_CONTAINER_VERSION}
+FROM ${REGISTRY}/python3.9-builder:${BASE_CONTAINER_VERSION}
 
 LABEL org.opencontainers.image.title="gdc_filtration_tools" \
       org.opencontainers.image.description="This repository contains the source code used in the VCF variant filtration workflows within the GDC. A single CLI is generated with multiple subcommands." \
