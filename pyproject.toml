@@ -134,3 +134,9 @@ max-complexity = 10
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["E402"]
+
+[[tool.mypy.overrides]]
+module = [
+        "pysam"
+]
+ignore_missing_imports = true
