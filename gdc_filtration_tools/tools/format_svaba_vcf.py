@@ -34,9 +34,9 @@ def format_svaba_vcf(input_vcf: str, origin_vcf: str, output_vcf: str) -> None:
     # Process
     try:
         for record in reader.fetch():
-            for record in reader:
-                writer.write(record)
-
+            writer.write(record)
+            total += 1
+    
             if total % 100000 == 0:
                 logger.info("Processed {0} records...".format(total))
 
