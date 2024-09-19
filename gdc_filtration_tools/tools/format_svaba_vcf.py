@@ -13,7 +13,7 @@ from gdc_filtration_tools.logger import Logger
 from gdc_filtration_tools.utils import get_pysam_outmode
 
 
-def reheader_svaba_vcf(input_vcf: str, origin_vcf: str, output_vcf: str) -> None:
+def format_svaba_vcf(input_vcf: str, origin_vcf: str, output_vcf: str) -> None:
     """
     Formats SvABA indel VCFs to work better with GDC downstream workflows.
 
