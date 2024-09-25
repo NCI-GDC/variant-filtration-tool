@@ -47,7 +47,7 @@ def main(args: List[str] = []) -> None:
     ]
     defopt.run(
         funcs,
-        argv=args if args is not None else sys.argv[1:],
+        argv=args if args is not [] else sys.argv[1:],
         version=True,
         argparse_kwargs={"prog": "gdc_filtration_tools"},
     )
