@@ -7,6 +7,8 @@ TODO:
 @author: Linghao Song <linghao@uchicago.edu>
 """
 
+import gzip
+
 import pysam
 
 from gdc_filtration_tools.logger import Logger
@@ -27,9 +29,10 @@ def format_svaba_vcf(input_vcf: str, origin_vcf: str, output_vcf: str) -> None:
     # setup
     total = 0
     reader = pysam.VariantFile(input_vcf)
-    header = pysam.VariantFile(origin_vcf)
+    origin_vcf_gz = gzip.open(origin_vcf)
+    header = pysam.VariantFile(origin_vcf_gz)
     mode = get_pysam_outmode(output_vcf)
-    writer = pysam.VariantFile(output_vcf, mode=mode, header=reader.header)
+    writer = pysam.VariantFile(output_vcf, mode=mode, header=header.header)
 
     # Process
     try:
