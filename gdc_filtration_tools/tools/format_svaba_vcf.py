@@ -23,17 +23,21 @@ def format_svaba_vcf(input_vcf: str, origin_vcf: str, output_vcf: str) -> None:
     :param origin_vcf: The Raw Somatic Mutation input VCF file of the entire workflow. Used as reference of the header
     :param output_vcf: The output formatted VCF file to create. BGzip and tabix-index created if ends with '.gz'.
     """
-    logger = Logger.get_logger("format_svaba_indel_vcf")
+    logger = Logger.get_logger("format_svaba_vcf")
     logger.info("Formats SvABA indel VCFs.")
 
     # setup
     total = 0
     reader = pysam.VariantFile(input_vcf)
-    origin_vcf_gz = gzip.open(origin_vcf)
-    header = pysam.VariantFile(origin_vcf_gz)
+    #origin_vcf_gz = gzip.open(origin_vcf)
+    #header = pysam.VariantFile(origin_vcf_gz)
     mode = get_pysam_outmode(output_vcf)
-    writer = pysam.VariantFile(output_vcf, mode=mode, header=header.header)
-
+    header = reader.header
+    header.formats.remove_header("GQ")
+    header.add_line('##FORMAT=<ID=GQ,Number=1,Type=Float,Description="Genotype quality (SvABA currently not supported. Always 0)">')
+    writer = pysam.VariantFile(output_vcf, mode=mode, header=header)
+    print(header)
+    #import pdb; pdb.set_trace()
     # Process
     try:
         for record in reader.fetch():
@@ -44,7 +48,6 @@ def format_svaba_vcf(input_vcf: str, origin_vcf: str, output_vcf: str) -> None:
                 logger.info("Processed {0} records...".format(total))
 
     finally:
-        header.close()
         reader.close()
         writer.close()
 
