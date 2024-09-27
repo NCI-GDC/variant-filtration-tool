@@ -1,13 +1,9 @@
 """Format SvABA VCFs for downstream GDC workflows. This includes:
 
-TODO:
-1.
-2.
-
 @author: Linghao Song <linghao@uchicago.edu>
 """
 
-import gzip
+# import gzip
 
 import pysam
 
