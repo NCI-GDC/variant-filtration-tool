@@ -15,12 +15,11 @@ from gdc_filtration_tools.logger import Logger
 from gdc_filtration_tools.utils import get_pysam_outmode
 
 
-def format_svaba_vcf(input_vcf: str, origin_vcf: str, output_vcf: str) -> None:
+def format_svaba_vcf(input_vcf: str, output_vcf: str) -> None:
     """
     Formats SvABA indel VCFs to work better with GDC downstream workflows.
 
     :param input_vcf: The input VCF file to undo the Picard header fix.
-    :param origin_vcf: The Raw Somatic Mutation input VCF file of the entire workflow. Used as reference of the header
     :param output_vcf: The output formatted VCF file to create. BGzip and tabix-index created if ends with '.gz'.
     """
     logger = Logger.get_logger("format_svaba_vcf")
@@ -29,15 +28,15 @@ def format_svaba_vcf(input_vcf: str, origin_vcf: str, output_vcf: str) -> None:
     # setup
     total = 0
     reader = pysam.VariantFile(input_vcf)
-    #origin_vcf_gz = gzip.open(origin_vcf)
-    #header = pysam.VariantFile(origin_vcf_gz)
     mode = get_pysam_outmode(output_vcf)
+    # The VCF from SvABA output is using a customized header. The type in GQ and PL is float but written as Integar in the header.
+    # This step is hardcoded these 2 lines to the matched types
     header = reader.header
     header.formats.remove_header("GQ")
+    header.formats.remove_header("PL")
     header.add_line('##FORMAT=<ID=GQ,Number=1,Type=Float,Description="Genotype quality (SvABA currently not supported. Always 0)">')
+    header.add_line('##FORMAT=<ID=PL,Number=G,Type=Float,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">')
     writer = pysam.VariantFile(output_vcf, mode=mode, header=header)
-    print(header)
-    #import pdb; pdb.set_trace()
     # Process
     try:
         for record in reader.fetch():
