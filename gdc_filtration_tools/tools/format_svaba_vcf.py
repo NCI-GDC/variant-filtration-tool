@@ -1,13 +1,9 @@
 """Format SvABA VCFs for downstream GDC workflows. This includes:
 
-TODO:
-1.
-2.
-
 @author: Linghao Song <linghao@uchicago.edu>
 """
 
-import gzip
+# import gzip
 
 import pysam
 
@@ -34,8 +30,12 @@ def format_svaba_vcf(input_vcf: str, output_vcf: str) -> None:
     header = reader.header
     header.formats.remove_header("GQ")
     header.formats.remove_header("PL")
-    header.add_line('##FORMAT=<ID=GQ,Number=1,Type=Float,Description="Genotype quality (SvABA currently not supported. Always 0)">')
-    header.add_line('##FORMAT=<ID=PL,Number=G,Type=Float,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">')
+    header.add_line(
+        '##FORMAT=<ID=GQ,Number=1,Type=Float,Description="Genotype quality (SvABA currently not supported. Always 0)">'
+    )
+    header.add_line(
+        '##FORMAT=<ID=PL,Number=G,Type=Float,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">'
+    )
     writer = pysam.VariantFile(output_vcf, mode=mode, header=header)
     # Process
     try:
