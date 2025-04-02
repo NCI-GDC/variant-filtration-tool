@@ -289,3 +289,4 @@ optional arguments:
 
 **variant-filtration-tool** <br />
 Repository: https://quay.io/ncigdc/variant-filtration-tool <br />
+Pull by docker.osdc.io/ncigdc/variant-filtration-tool:build-80-ead70e7d
