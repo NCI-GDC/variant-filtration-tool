@@ -1,9 +1,9 @@
 """Testing utility functions."""
+
 import os
 import sys
-
-from io import StringIO
 from contextlib import contextmanager
+from io import StringIO
 
 from gdc_filtration_tools.logger import Logger
 

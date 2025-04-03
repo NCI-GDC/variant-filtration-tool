@@ -3,11 +3,11 @@ problems with downstream tools.
 
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
+
 import pysam
 
 from gdc_filtration_tools.logger import Logger
 from gdc_filtration_tools.utils import get_pysam_outmode
-
 
 ALLOWED_BASES = {"A", "C", "T", "G"}
 
@@ -38,26 +38,27 @@ def filter_nonstandard_variants(input_vcf: str, output_vcf: str) -> None:
     try:
         for record in reader.fetch():
             total += 1
-            alleles = list(''.join(list(record.alleles)).upper())
-            check = set(alleles) - ALLOWED_BASES
-            if check:
-                logger.warning(
-                    "Removing {0}:{1}:{2}".format(
-                        record.chrom, record.pos, ",".join(alleles)
+            if record.alleles is not None:
+                alleles = list("".join(list(record.alleles)).upper())
+                check = set(alleles) - ALLOWED_BASES
+                if check:
+                    logger.warning(
+                        "Removing {0}:{1}:{2}".format(
+                            record.chrom, record.pos, ",".join(alleles)
+                        )
                     )
-                )
-                removed += 1
-            else:
-                written += 1
-                writer.write(record)
+                    removed += 1
+                else:
+                    written += 1
+                    writer.write(record)
 
     finally:
         reader.close()
         writer.close()
 
-    if mode == "wz":
+    if output_vcf.endswith(".gz"):
         logger.info("Creating tabix index...")
-        tbx = pysam.tabix_index(output_vcf, preset="vcf", force=True)
+        pysam.tabix_index(output_vcf, preset="vcf", force=True)
 
     logger.info(
         "Processed {} records - Removed {}; Wrote {} ".format(total, removed, written)

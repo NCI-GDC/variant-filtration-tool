@@ -1,5 +1,5 @@
-"""Main entrypoint for the gdc_filtration_tools package.
-"""
+"""Main entrypoint for the gdc_filtration_tools package."""
+
 import sys
 from typing import List
 
@@ -20,9 +20,10 @@ from gdc_filtration_tools.tools.filter_somatic_score import filter_somatic_score
 from gdc_filtration_tools.tools.format_gdc_vcf import format_gdc_vcf
 from gdc_filtration_tools.tools.format_pindel_vcf import format_pindel_vcf
 from gdc_filtration_tools.tools.format_sanger_pindel_vcf import format_sanger_pindel_vcf
+from gdc_filtration_tools.tools.format_svaba_vcf import format_svaba_vcf
 
 
-def main(args: List[str] = None) -> None:
+def main(args: List[str] = []) -> None:
     """
     Main entrypoint for the CLI.
     """
@@ -41,13 +42,14 @@ def main(args: List[str] = None) -> None:
         format_gdc_vcf,
         format_pindel_vcf,
         format_sanger_pindel_vcf,
+        format_svaba_vcf,
         position_filter_dkfz,
     ]
     defopt.run(
         funcs,
-        argv=args if args is not None else sys.argv[1:],
+        argv=args if args != [] else sys.argv[1:],
         version=True,
-        argparse_kwargs={'prog': 'gdc_filtration_tools'},
+        argparse_kwargs={"prog": "gdc_filtration_tools"},
     )
     logger.info("Finished!")
 

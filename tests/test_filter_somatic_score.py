@@ -1,5 +1,5 @@
-"""Tests the ``gdc_filtration_tools.tools.filter_somatic_score`` module.
-"""
+"""Tests the ``gdc_filtration_tools.tools.filter_somatic_score`` module."""
+
 import tempfile
 import unittest
 

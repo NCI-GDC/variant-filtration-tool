@@ -1,9 +1,7 @@
-"""Tests the ``gdc_filtration_tools.tools.create_oxog_intervals`` module.
-"""
+"""Tests the ``gdc_filtration_tools.tools.create_oxog_intervals`` module."""
+
 import tempfile
 import unittest
-
-import pysam
 
 from gdc_filtration_tools.__main__ import main
 from gdc_filtration_tools.tools.create_oxog_intervals import create_oxog_intervals

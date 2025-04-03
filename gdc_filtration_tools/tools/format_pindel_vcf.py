@@ -9,15 +9,16 @@
 
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
-from typing import Any, List, NewType, Tuple
+
+from typing import Any, List, Tuple
 
 import pysam
 
 from gdc_filtration_tools.logger import Logger
 from gdc_filtration_tools.utils import get_pysam_outmode
 
-VariantHeaderT = NewType("VariantHeaderT", pysam.VariantHeader)
-VariantRecordT = NewType("VariantRecordT", pysam.VariantRecord)
+VariantHeaderT = pysam.VariantHeader
+VariantRecordT = pysam.VariantRecord
 
 
 def get_header(old_header: VariantHeaderT) -> VariantHeaderT:
@@ -34,7 +35,7 @@ def get_header(old_header: VariantHeaderT) -> VariantHeaderT:
                     "INFO",
                     items=[
                         ("ID", "forcedHet"),
-                        ("Number", 0),
+                        ("Number", "0"),
                         ("Type", "Flag"),
                         (
                             "Description",
@@ -54,7 +55,7 @@ def get_header(old_header: VariantHeaderT) -> VariantHeaderT:
                         if k == "IDX":
                             continue
                         curr.append((k, v.replace('"', "")))
-                header.add_meta(record.key, items=curr)
+                header.add_meta((record.key or ""), items=curr)
             else:
                 header.add_record(record)
 
@@ -131,17 +132,20 @@ def format_pindel_vcf(input_vcf: str, output_vcf: str) -> None:
             for i in new_info:
                 new_record.info[i[0]] = i[1]
 
-            for i, sample in enumerate(record.samples):
-                for k, v in record.samples[sample].items():
-                    new_record.samples[i][k] = v
+            for sample_name, sample_data in record.samples.items():
+                for k, v in sample_data.items():
+                    new_record.samples[sample_name][k] = v
+            # for i, sample in enumerate(record.samples):
+            #    for k, v in record.samples[sample].items():
+            #        new_record.samples[i][k] = v
             writer.write(new_record)
 
     finally:
         reader.close()
         writer.close()
 
-    if mode == "wz":
+    if output_vcf.endswith(".gz"):
         logger.info("Creating tabix index...")
-        tbx = pysam.tabix_index(output_vcf, preset="vcf", force=True)
+        pysam.tabix_index(output_vcf, preset="vcf", force=True)
 
     logger.info("Processed {} records.".format(total))

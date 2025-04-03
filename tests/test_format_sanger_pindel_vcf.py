@@ -1,9 +1,8 @@
-"""Tests the ``gdc_filtration_tools.tools.format_sanger_pindel_vcf`` module.
-"""
+"""Tests the ``gdc_filtration_tools.tools.format_sanger_pindel_vcf`` module."""
+
 import tempfile
 import unittest
 
-import attr
 import pysam
 
 from gdc_filtration_tools.__main__ import main

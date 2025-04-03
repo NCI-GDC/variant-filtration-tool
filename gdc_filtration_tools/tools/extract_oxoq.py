@@ -3,13 +3,13 @@ metrics SQLite db file.
 
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
+
 import sqlite3
 from math import log10
-from typing import NewType
 
 from gdc_filtration_tools.logger import Logger
 
-Cursor = NewType("Cursor", sqlite3.Cursor)
+Cursor = sqlite3.Cursor
 
 
 def get_oxoq(cur: Cursor, context: str, table: str, input_state: str) -> float:
@@ -28,9 +28,7 @@ def get_oxoq(cur: Cursor, context: str, table: str, input_state: str) -> float:
         """
     SELECT TOTAL_BASES, ALT_OXO_BASES, ALT_NONOXO_BASES, OXIDATION_Q
     FROM {0} WHERE CONTEXT='{1}' AND input_state='{2}'
-    """.format(
-            table, context, input_state
-        )
+    """.format(table, context, input_state)
     )
 
     # Parse results

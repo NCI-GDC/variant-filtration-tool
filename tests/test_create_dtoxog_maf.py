@@ -1,5 +1,5 @@
-"""Tests the ``gdc_filtration_tools.tools.create_dtoxog_maf`` module.
-"""
+"""Tests the ``gdc_filtration_tools.tools.create_dtoxog_maf`` module."""
+
 import tempfile
 import unittest
 

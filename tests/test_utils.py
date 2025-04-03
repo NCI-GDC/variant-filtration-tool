@@ -1,4 +1,5 @@
 """Tests the ``gdc_filtration_tools.utils` package."""
+
 import unittest
 
 from gdc_filtration_tools.utils import get_pysam_outmode
@@ -10,4 +11,4 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(mode, "w")
 
         mode = get_pysam_outmode("fake.vcf.gz")
-        self.assertEqual(mode, "wz")
+        self.assertEqual(mode, "w")

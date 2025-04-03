@@ -3,20 +3,19 @@ This code was adapted from the PCAWG efforts.
 
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
+
 import csv
 import logging
-from typing import Dict, NewType, Tuple
+from typing import Dict, Optional, Tuple
 
 import pysam
 
 from gdc_filtration_tools.logger import Logger
 
-VariantRecordT = NewType("VariantRecordT", pysam.VariantRecord)
-VariantRecordSampleT = NewType(
-    "VariantRecordSampleT", pysam.libcbcf.VariantRecordSample
-)
-FastaFileT = NewType("FastaFileT", pysam.FastaFile)
-LoggerT = NewType("LoggerT", logging.Logger)
+VariantRecordT = pysam.VariantRecord
+VariantRecordSampleT = pysam.libcbcf.VariantRecordSample
+FastaFileT = pysam.FastaFile
+LoggerT = logging.Logger
 
 POSSIBLE_ALLELES = {"A", "C", "T", "G", "N"}
 
@@ -43,10 +42,10 @@ MAF_COLUMNS = [
 def generate_maf_record(
     record: VariantRecordT,
     fasta: FastaFileT,
-    oxog: Dict[str, Tuple[int]],
+    oxog: Dict[str, Tuple[int, ...]],
     oxoq_score: float,
     logger: LoggerT,
-) -> Dict[str, str]:
+) -> Optional[Dict[str, str]]:
     """
     Main function for converting the VCF record to dToxoG MAF record
     represented as a dictionary.
@@ -56,22 +55,31 @@ def generate_maf_record(
 
     # Alleles
     ref_allele = record.ref
-    alt_allele = extract_alt(record.alleles, record.samples["TUMOR"])
+    if not ref_allele:
+        return None
+
+    if record.alleles:
+        alt_allele = extract_alt(record.alleles, record.samples["TUMOR"])
     if not alt_allele:
         logger.warning(
             "Unable to extract alt allele! {}:{}:{}:{}".format(
-                record.chrom, record.pos, record.ref, ",".join(list(record.alts))
+                record.chrom,
+                record.pos,
+                record.ref,
+                ",".join(list(record.alts)) if record.alts is not None else "",
             )
         )
-        return
-
+        return None
     if has_nonstandard_alleles(ref_allele, alt_allele):
         logger.warning(
             "Invalid allele present! {}:{}:{}:{}".format(
-                record.chrom, record.pos, record.ref, ",".join(list(record.alts))
+                record.chrom,
+                record.pos,
+                record.ref,
+                ",".join(list(record.alts)) if record.alts is not None else "",
             )
         )
-        return
+        return None
 
     # Build
     maf_dat["Chromosome"] = record.chrom
@@ -109,13 +117,14 @@ def generate_maf_record(
         maf_dat["i_t_Foxog"] = str(i_t_Foxog)
     except KeyError as e:
         logger.warning("Unable to find key {}".format(pos_key))
-        return
+        logger.warning(e)
+        return None
 
     return maf_dat
 
 
 def extract_maf_oxog_values(
-    pos_key: str, alt_allele: str, ref_allele: str, oxog: Dict[str, Tuple[int]]
+    pos_key: str, alt_allele: str, ref_allele: str, oxog: Dict[str, Tuple[int, ...]]
 ) -> Tuple[int, int, int, int, float]:
     """
     Takes the extracted values from the oxog metrics and calculates
@@ -158,7 +167,7 @@ def extract_maf_oxog_values(
 
     Noxog = 0
     Nalt = i_t_ALT_F2R1 + i_t_ALT_F1R2
-    i_t_Foxog = -1
+    i_t_Foxog = -1.0
     if (ref_allele == "C") or (ref_allele == "A"):
         Noxog = i_t_ALT_F2R1
 
@@ -172,7 +181,10 @@ def extract_maf_oxog_values(
 
 
 def get_context(
-    vcf_record: VariantRecordT, fasta: FastaFileT, *, size: int = 10
+    vcf_record: VariantRecordT,
+    fasta: FastaFileT,
+    *,
+    size: int = 10,
 ) -> str:
     """
     Extracts the adjacent bases to the variant.
@@ -181,10 +193,10 @@ def get_context(
     region = "{0}:{1}-{2}".format(
         vcf_record.chrom, max(1, vcf_record.pos - size), vcf_record.pos + size
     )
-    context = None
+    context = ""
     try:
         context = fasta.fetch(region=region)
-    except KeyError as e:
+    except KeyError:
         pass
     return context
 
@@ -196,7 +208,7 @@ def has_nonstandard_alleles(ref_allele: str, alt_allele: str) -> bool:
     return len(set([ref_allele, alt_allele]) - POSSIBLE_ALLELES) > 0
 
 
-def extract_alt(alleles: Tuple[str], tumor: VariantRecordSampleT) -> str:
+def extract_alt(alleles: Tuple[str, ...], tumor: VariantRecordSampleT) -> Optional[str]:
     """
     Extract the ALT allele for tumor sample. This function selects the first
     non-reference allele from the tumor sample.
@@ -209,10 +221,10 @@ def extract_alt(alleles: Tuple[str], tumor: VariantRecordSampleT) -> str:
         idx = [i for i in list(tumor["GT"]) if i][0]
     except IndexError:
         return None
-    return alleles[idx]
+    return str(alleles[idx])
 
 
-def load_oxog(filename: str) -> Dict[str, Tuple[int]]:
+def load_oxog(filename: str) -> Dict[str, Tuple[int, ...]]:
     """
     Given a path, parse the oxoGMetrics file and load into a dictionary
     of chr:position to prune.
@@ -221,8 +233,6 @@ def load_oxog(filename: str) -> Dict[str, Tuple[int]]:
     with open(filename, "rt") as fh:
         reader = csv.DictReader(fh, delimiter="\t")
         for line in reader:
-            ref = line["ref"]
-
             A_F1R2 = int(line["F1_A"]) + int(line["R2_A"])
             A_F2R1 = int(line["F2_A"]) + int(line["R1_A"])
             C_F1R2 = int(line["F1_C"]) + int(line["R2_C"])
@@ -233,23 +243,29 @@ def load_oxog(filename: str) -> Dict[str, Tuple[int]]:
             T_F2R1 = int(line["F2_T"]) + int(line["R1_T"])
 
             contig = line["contig"]
-            contig = contig.strip(" \t\n\r")
+            contig = str(contig.strip(" \t\n\r"))
 
-            result[contig + ":" + line["position"]] = (
-                A_F1R2,
-                A_F2R1,
-                C_F1R2,
-                C_F2R1,
-                G_F1R2,
-                G_F2R1,
-                T_F1R2,
-                T_F2R1,
+            result[contig + ":" + line["position"]] = tuple(
+                [
+                    A_F1R2,
+                    A_F2R1,
+                    C_F1R2,
+                    C_F2R1,
+                    G_F1R2,
+                    G_F2R1,
+                    T_F1R2,
+                    T_F2R1,
+                ]
             )
     return result
 
 
 def create_dtoxog_maf(
-    input_vcf: str, output_file: str, reference: str, oxog_file: str, oxoq_score: float,
+    input_vcf: str,
+    output_file: str,
+    reference: str,
+    oxog_file: str,
+    oxoq_score: float,
 ) -> None:
     """
     Takes a SNP-only VCF file and converts it to the dToxoG MAF format

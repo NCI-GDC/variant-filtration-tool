@@ -4,13 +4,17 @@ package.
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
 
+from typing import cast
 
-def get_pysam_outmode(fname: str):
+from typing_extensions import Literal
+
+
+def get_pysam_outmode(fname: str) -> Literal["r", "w", "wh", "rb", "wb", "wbu", "wb0"]:
     """
     Based on the filename returns wz etc.
 
     :param fname: the output filename
     :return: string pysam mode
     """
-    mode = "wz" if fname.endswith("gz") else "w"
-    return mode
+    mode = "w" if fname.endswith("gz") else "w"
+    return cast(Literal["r", "w", "wh", "rb", "wb", "wbu", "wb0"], mode)

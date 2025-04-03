@@ -1,5 +1,5 @@
-"""Tests the ``gdc_filtration_tools.tools.format_gdc_vcf`` module.
-"""
+"""Tests the ``gdc_filtration_tools.tools.format_gdc_vcf`` module."""
+
 import datetime
 import tempfile
 import unittest

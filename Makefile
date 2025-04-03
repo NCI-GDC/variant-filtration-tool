@@ -71,6 +71,9 @@ lint:
 run:
 	bin/run
 
+requirements-dev:
+	pip-compile -o dev-requirements.txt dev-requirements.in
+
 requirements: init-venv
 	python3 setup.py -q capture_requirements --dev
 	pip-compile -o requirements.txt requirements.in
@@ -119,4 +122,3 @@ publish-release: docker-login
 	docker push ${DOCKER_IMAGE}
 	docker push ${DOCKER_IMAGE_LATEST}
 	docker push ${DOCKER_IMAGE_PRODUCTION}
-

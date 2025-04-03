@@ -3,7 +3,8 @@ that failed, and writes them out to a minimal VCF file.
 
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
-from typing import Dict, Generator, TextIO
+
+from typing import Dict, Generator, List, TextIO, cast
 
 from pysam import FastaFile, VariantFile, VariantHeader, VariantRecord, tabix_index
 
@@ -37,7 +38,7 @@ def maf_generator(fh: TextIO) -> Generator[Dict[str, str], None, None]:
 
     :param fh: MAF file handle.
     """
-    head = []
+    head: List[str] = list()
     for line in fh:
         if line.startswith("#"):
             continue
@@ -58,12 +59,15 @@ def build_new_record(maf: Dict[str, str], vcf: VariantFile, tag: str) -> Variant
         maf["Reference_Allele"],
         maf["Tumor_Seq_Allele1"],
     )
-    record = vcf.new_record(
-        contig=str(maf["Chromosome"]),
-        start=int(maf["Start_position"]) - 1,
-        stop=len(maf["Reference_Allele"]) + int(maf["Start_position"]) - 1,
-        filter=(tag,),
-        alleles=alleles,
+    record = cast(
+        VariantRecord,
+        vcf.new_record(
+            contig=str(maf["Chromosome"]),
+            start=int(maf["Start_position"]) - 1,
+            stop=len(maf["Reference_Allele"]) + int(maf["Start_position"]) - 1,
+            filter=(tag,),
+            alleles=alleles,
+        ),
     )
     return record
 
@@ -104,8 +108,8 @@ def dtoxog_maf_to_vcf(input_maf: str, reference_fa: str, output_vcf: str) -> Non
     finally:
         writer.close()
 
-    if mode == "wz":
+    if output_vcf.endswith(".gz"):
         logger.info("Creating tabix index...")
-        tbx = tabix_index(output_vcf, preset="vcf", force=True)
+        tabix_index(output_vcf, preset="vcf", force=True)
 
     logger.info("Processed {} records - Wrote {}".format(total, written))

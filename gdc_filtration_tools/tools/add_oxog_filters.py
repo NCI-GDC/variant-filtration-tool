@@ -4,6 +4,7 @@ it mutates the header to add the 'oxog' filter metadata.
 
 @author: Kyle Hernandez <kmhernan@uchicago.edu>
 """
+
 import pysam
 
 from gdc_filtration_tools.logger import Logger
@@ -45,6 +46,7 @@ def add_oxog_filters(input_vcf: str, input_dtoxog: str, output_vcf: str) -> None
             region = "{0}:{1}-{2}".format(record.contig, record.pos, record.pos)
             try:
                 for row in dtoxog_reader.fetch(region=region):
+                    assert isinstance(record.ref, str) and isinstance(row.ref, str)
                     if record.pos == row.pos and record.ref.upper() == row.ref.upper():
                         # Add filter if failed oxog
                         record.filter.add("oxog")
@@ -66,9 +68,9 @@ def add_oxog_filters(input_vcf: str, input_dtoxog: str, output_vcf: str) -> None
         writer.close()
         dtoxog_reader.close()
 
-    if mode == "wz":
+    if output_vcf.endswith(".gz"):
         logger.info("Creating tabix index...")
-        tbx = pysam.tabix_index(output_vcf, preset="vcf", force=True)
+        pysam.tabix_index(output_vcf, preset="vcf", force=True)
 
     logger.info(
         "Processed {} records - Tagged {}; Wrote {} ".format(total, tagged, written)

@@ -1,5 +1,5 @@
-"""Tests the ``gdc_filtration_tools.tools.extract_oxoq`` module.
-"""
+"""Tests the ``gdc_filtration_tools.tools.extract_oxoq`` module."""
+
 import sqlite3
 import tempfile
 import unittest
@@ -72,7 +72,6 @@ class TestExtractOxoq(unittest.TestCase):
 
     def test_extract_oxoq_from_sqlite(self):
         rec = OxoqRecord("10000", "200", "100", "30.23")
-        exp = 30.23
         (fd, fn) = tempfile.mkstemp()
 
         # Generate test db
