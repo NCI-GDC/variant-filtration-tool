@@ -1,7 +1,6 @@
 GDC Variant Filtration Tool
 ---
 
-
 This repository contains the source code used in the VCF variant filtration
 workflows within the GDC. A single CLI is generated with multiple subcommands. 
 
