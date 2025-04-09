@@ -6,9 +6,18 @@
 # import gzip
 
 import pysam
+from pysam.libcbcf import VariantRecord
 
 from gdc_filtration_tools.logger import Logger
 from gdc_filtration_tools.utils import get_pysam_outmode
+
+
+def processing_gq_pl(record: VariantRecord) -> VariantRecord:
+    for s in record.samples.keys():
+        record.samples[s]["GQ"] = 0
+        pl_value = record.samples[s]["PL"]
+        record.samples[s]["PL"] = int(round(l_value))
+    return processed_record
 
 
 def format_svaba_vcf(input_vcf: str, output_vcf: str) -> None:
@@ -40,6 +49,8 @@ def format_svaba_vcf(input_vcf: str, output_vcf: str) -> None:
     # Process
     try:
         for record in reader.fetch():
+            record = processing_gq_pl(record)
+
             writer.write(record)
             total += 1
 
