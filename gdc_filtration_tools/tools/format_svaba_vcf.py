@@ -16,7 +16,7 @@ def processing_gq_pl(record: VariantRecord) -> VariantRecord:
     for s in record.samples.keys():
         record.samples[s]["GQ"] = 0
         pl_value = record.samples[s]["PL"]
-        record.samples[s]["PL"] = int(round(l_value))
+        record.samples[s]["PL"] = tuple([int(round(i)) for i in pl_value])
     return processed_record
 
 
