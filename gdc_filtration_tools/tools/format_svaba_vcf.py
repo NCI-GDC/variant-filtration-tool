@@ -19,7 +19,6 @@ def processing_gq_pl(record: VariantRecord) -> VariantRecord:
         record.samples[s]["PL"] = int(round(l_value))
     return processed_record
 
-
 def format_svaba_vcf(input_vcf: str, output_vcf: str) -> None:
     """
     Formats SvABA indel VCFs to work better with GDC downstream workflows.
@@ -49,6 +48,7 @@ def format_svaba_vcf(input_vcf: str, output_vcf: str) -> None:
     # Process
     try:
         for record in reader.fetch():
+          
             record = processing_gq_pl(record)
 
             writer.write(record)
