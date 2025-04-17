@@ -5,8 +5,6 @@
 
 # import gzip
 
-from typing import Boolean
-
 import pysam
 from pysam.libcbcf import VariantRecord
 
