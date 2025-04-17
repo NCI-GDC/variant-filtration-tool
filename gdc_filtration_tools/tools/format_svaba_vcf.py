@@ -5,6 +5,8 @@
 
 # import gzip
 
+from typing import Boolean
+
 import pysam
 from pysam.libcbcf import VariantRecord
 
@@ -18,6 +20,13 @@ def processing_gq_pl(record: VariantRecord) -> VariantRecord:
         pl_value = record.samples[s]["PL"]
         record.samples[s]["PL"] = tuple([int(round(i)) for i in pl_value])
     return processed_record
+
+
+def check_samples(record: VariantRecord) -> bool:
+    samples = list(reader.header.samples)
+    if samples == ["NORMAL", "TUMOR"]:
+        return True
+    return False
 
 
 def format_svaba_vcf(input_vcf: str, output_vcf: str) -> None:
@@ -35,15 +44,19 @@ def format_svaba_vcf(input_vcf: str, output_vcf: str) -> None:
     reader = pysam.VariantFile(input_vcf)
     mode = get_pysam_outmode(output_vcf)
     # The VCF from SvABA output is using a customized header. The type in GQ and PL is float but written as Integar in the header.
+    # initial check for header samples:
+    if not check_samples(reader):
+        raise ValueError("Samples in the raw VCF is not NORMAL and Tumor")
+
     # This step is hardcoded these 2 lines to the matched types
     header = reader.header
     header.formats.remove_header("GQ")
     header.formats.remove_header("PL")
     header.add_line(
-        '##FORMAT=<ID=GQ,Number=1,Type=Float,Description="Genotype quality (SvABA currently not supported. Always 0)">'
+        '##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype quality (SvABA currently not supported. Always 0)">'
     )
     header.add_line(
-        '##FORMAT=<ID=PL,Number=G,Type=Float,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">'
+        '##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">'
     )
     writer = pysam.VariantFile(output_vcf, mode=mode, header=header)
     # Process
