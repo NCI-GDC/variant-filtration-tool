@@ -74,7 +74,7 @@ pyyaml==6.0.2
     # via
     #   detect-secrets
     #   pre-commit
-requests==2.32.3
+requests==2.32.4
     # via detect-secrets
 ruff==0.6.4
     # via variant-filtration-tool (pyproject.toml)
