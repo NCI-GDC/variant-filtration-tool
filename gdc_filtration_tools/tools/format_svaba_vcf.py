@@ -17,11 +17,11 @@ def processing_gq_pl(record: VariantRecord) -> VariantRecord:
         record.samples[s]["GQ"] = 0
         pl_value = record.samples[s]["PL"]
         record.samples[s]["PL"] = tuple([int(round(i)) for i in pl_value])
-    return processed_record
+    return record
 
 
 def check_samples(record: VariantRecord) -> bool:
-    samples = list(reader.header.samples)
+    samples = list(record.header.samples)
     if samples == ["NORMAL", "TUMOR"]:
         return True
     return False
