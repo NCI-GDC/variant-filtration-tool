@@ -20,7 +20,7 @@ def processing_gq_pl(record: VariantRecord) -> VariantRecord:
     return record
 
 
-def check_samples(record: VariantRecord) -> bool:
+def check_samples(record: VariantFile) -> bool:
     samples = list(record.header.samples)
     if samples == ["NORMAL", "TUMOR"]:
         return True
