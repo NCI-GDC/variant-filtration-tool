@@ -11,11 +11,10 @@ RUN pip install tox && tox -e build
 
 RUN dnf install -y git
 
-RUN git clone https://github.com/atks/vt.git <<EOF
-cd vt
-git submodule update --init --recursive
-make
-EOF
+RUN git clone https://github.com/atks/vt.git \
+    && cd vt \
+    && git submodule update --init --recursive \
+    && make
 
 FROM ${REGISTRY}/python3.9-builder:${BASE_CONTAINER_VERSION}
 
