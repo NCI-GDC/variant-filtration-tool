@@ -33,7 +33,3 @@ RUN pip install --no-deps --no-binary pysam -r requirements.txt \
 	&& rm -f *.whl requirements.txt
 
 USER app
-
-ENTRYPOINT ["gdc_filtration_tools"]
-
-CMD ["--help"]
