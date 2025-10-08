@@ -9,6 +9,16 @@ WORKDIR /gdc_filtration_tools
 
 RUN pip install tox && tox -e build
 
+RUN dnf install -y git
+
+WORKDIR /opt
+
+RUN git clone https://github.com/atks/vt.git \
+    && cd vt \
+    && git submodule update --init --recursive \
+    && make \
+    && ls -al /opt/vt
+
 FROM ${REGISTRY}/python3.9-builder:${BASE_CONTAINER_VERSION}
 
 LABEL org.opencontainers.image.title="gdc_filtration_tools" \
@@ -17,6 +27,9 @@ LABEL org.opencontainers.image.title="gdc_filtration_tools" \
       org.opencontainers.image.vendor="NCI GDC"
 
 COPY --from=builder /gdc_filtration_tools/dist/*.whl /gdc_filtration_tools/
+
+COPY --from=builder /opt/vt/vt /opt/
+
 COPY requirements.txt /gdc_filtration_tools/
 
 WORKDIR /gdc_filtration_tools
@@ -26,7 +39,3 @@ RUN pip install --no-deps --no-binary pysam -r requirements.txt \
 	&& rm -f *.whl requirements.txt
 
 USER app
-
-ENTRYPOINT ["gdc_filtration_tools"]
-
-CMD ["--help"]
