@@ -115,3 +115,6 @@ gl-code-quality-report.html
 
 # Added in base-container builder image
 aws-lc
+
+# UV
+uv.lock
