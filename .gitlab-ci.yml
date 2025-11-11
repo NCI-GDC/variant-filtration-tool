@@ -7,5 +7,5 @@ include:
       - templates/python/full.yaml
 
 variables:
-  BUILD_PY_VERSION: python3.9
-  RELEASE_PY_VERSION: python3.9
+  BUILD_PY_VERSION: python3.13
+  RELEASE_PY_VERSION: python3.13
