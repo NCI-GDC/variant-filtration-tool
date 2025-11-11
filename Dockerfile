@@ -1,7 +1,7 @@
 ARG REGISTRY=docker.osdc.io/ncigdc
 ARG BASE_CONTAINER_VERSION=latest
 
-FROM ${REGISTRY}/python3.9-builder:${BASE_CONTAINER_VERSION} as builder
+FROM ${REGISTRY}/python3.13-builder:${BASE_CONTAINER_VERSION} as builder
 
 COPY ./ /gdc_filtration_tools
 
@@ -19,7 +19,7 @@ RUN git clone https://github.com/atks/vt.git \
     && make \
     && ls -al /opt/vt
 
-FROM ${REGISTRY}/python3.9-builder:${BASE_CONTAINER_VERSION}
+FROM ${REGISTRY}/python3.13-builder:${BASE_CONTAINER_VERSION}
 
 LABEL org.opencontainers.image.title="gdc_filtration_tools" \
       org.opencontainers.image.description="This repository contains the source code used in the VCF variant filtration workflows within the GDC. A single CLI is generated with multiple subcommands." \

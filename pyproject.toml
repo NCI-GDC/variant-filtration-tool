@@ -10,7 +10,7 @@ authors = [
 ]
 
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.13"
 license = {file = "LICENSE"}
 classifiers = [
     "License :: OSI Approved :: Apache Software License",
@@ -35,7 +35,7 @@ build = [
 
 dev = [
     "black",
-    "detect-secrets==1.4.0",
+    "detect-secrets",
     "ruff",
     "mypy",
     "pre-commit>=2.9.0",
@@ -84,7 +84,7 @@ exclude = [
 ]
 
 [tool.mypy]
-python_version = 3.9
+python_version = 3.13
 disallow_untyped_defs = true
 warn_return_any = true
 warn_unused_configs = true
@@ -126,7 +126,7 @@ line-length = 88
 # Allow unused variables when underscore-prefixed.
 lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
-target-version = 'py38'
+target-version = 'py313'
 
 [tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
