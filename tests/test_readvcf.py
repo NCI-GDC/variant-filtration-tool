@@ -245,7 +245,7 @@ class TestVcfReader(TestCase):
     )
     def test__get_header(self, get_header_sections, construct_header_dict):
         filename = "test.vcf"
-        vr = VcfReader(filename)
+        VcfReader(filename)
 
         get_header_sections.assert_called_once()
         construct_header_dict.assert_called_once_with({"name": "header sections"})

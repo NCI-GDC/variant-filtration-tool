@@ -13,10 +13,9 @@ Format Strelka2 VCF output and perform additional quality filtration.
 6. Ensure GT format specification exists in header
 """
 
-import os
-from typing import List, Tuple
+from typing import Tuple
 
-from pysam import tabix_compress, tabix_index
+from pysam import tabix_index
 
 from gdc_filtration_tools.logger import Logger
 from gdc_filtration_tools.readvcf import VcfReader
@@ -31,21 +30,33 @@ def format_strelka_vcf(input_vcf: str, output_vcf: str) -> None:
     :param output_vcf: The output formatted VCF file to create. BGzip and tabix-index created if ends with '.gz'.
     """
 
+    logger = Logger.get_logger("format_strelka_vcf")
+    logger.info("Formats Strelka2 Somatic VCFs.")
+    logger.info(f"Input: {input_vcf}")
+    logger.info(f"Output: {output_vcf}")
+
     vcf = VcfReader(input_vcf)
     vcf.header["FORMAT"] = ensure_gt(vcf.header["FORMAT"])
 
     with open(output_vcf.removesuffix(".gz"), "wt") as outvcf:
         # write header
+        logger.info(f"Writing header")
         for line in vcf.iter_header_lines():
             print(line, file=outvcf)
         # adjust and write rows
+        logger.info("Writing records")
+        count = 0
         for row in vcf.iter_rows():
             new_row = adjust_record(row)
             line = "\t".join(new_row)
             print(line, file=outvcf)
-
+            if count % 10000:
+                logger.info(f"written {count} records")
+        logger.info("Finished writing records")
+    logger.info("Indexing VCF")
     if output_vcf.endswith(".gz"):
         tabix_index(output_vcf.removesuffix(".gz"), preset="vcf")
+    logger.info("DONE")
 
 
 def ensure_gt(format_section: dict[str, str]) -> dict[str, str]:
