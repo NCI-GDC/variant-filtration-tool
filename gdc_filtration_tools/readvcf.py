@@ -184,7 +184,7 @@ class VcfReader:
         vcf.seek(self.records_offset)
         return vcf
 
-    def iter_rows(self) -> Generator[tuple]:
+    def iter_rows(self) -> Generator[tuple, None, None]:
         """
         returns an iterator over the variant records
         """
@@ -207,7 +207,7 @@ class VcfReader:
         else:
             return open
 
-    def _read_header_sections(self) -> Generator[Tuple[str, List[str]]]:
+    def _read_header_sections(self) -> Generator[Tuple[str, List[str]], None, None]:
         """
         Generator that provides aggregated adjacent lines from
         recognized and miscellaneous sections
@@ -223,7 +223,7 @@ class VcfReader:
             section_lines += [line]
         yield (strack.get_current_section(), section_lines)
 
-    def _read_header_lines(self) -> Generator[str]:
+    def _read_header_lines(self) -> Generator[str, None, None]:
         """
         Read lines from vcf header and set records_offset where
         column header line is encountered
