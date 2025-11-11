@@ -1,5 +1,7 @@
+from collections import namedtuple
+from io import StringIO
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from gdc_filtration_tools.readvcf import VcfReader, VcfSectionTracker
 
@@ -94,6 +96,19 @@ class TestVcfSectionTracker(TestCase):
         assert res == expected_result
         assert getattr(vst, "_misc_section_counter") == 1
         nmsfn.assert_called_once()
+
+    @patch.object(VcfSectionTracker, "_not_misc_section")
+    def test__get_line_section_column_names(self, nmsfn):
+        """
+        Test behavior when line section is in expected set
+        """
+        vst = VcfSectionTracker()
+        line = "#CHROM"
+        expected_result = "COLUMN_NAMES"
+
+        res = vst.get_line_section(line)
+        assert res == expected_result
+        nmsfn.assert_not_called()
 
     def test__not_misc_section_no_current_section(self):
         """
@@ -221,6 +236,7 @@ class TestVcfReader(TestCase):
         assert vr.header == {}
         assert vr.filename is filename
         assert vr.records_offset is None
+        assert vr.open_fn is open
         ghfn.assert_called_once()
 
     @patch.object(VcfReader, "_construct_header_dict")
@@ -236,7 +252,7 @@ class TestVcfReader(TestCase):
 
     records = [("one", ["line1"]), ("one", ["line2"])]
 
-    @patch.object(VcfReader, "_get_header", return_value={})
+    @patch.object(VcfReader, "_get_header")
     @patch.object(VcfReader, "_read_header_sections", return_value=iter(records))
     def test__get_header_sections(self, read_header_sections, get_header):
         filename = "test.vcf"
@@ -246,12 +262,79 @@ class TestVcfReader(TestCase):
         assert header_sections == {"one": ["line1", "line2"]}
         read_header_sections.assert_called_once()
 
-    @patch.object(VcfReader, "_get_header", return_value={})
-    def test__construct_header_dict(self):
+    @patch.object(VcfReader, "_get_header")
+    def test__construct_header_dict(self, get_header):
         filename = "test.vcf"
         vr = VcfReader(filename)
         header_sections = {"misc_0": ["line1"]}
 
         expected_dictionary = {"misc_0": {0: "line1"}}
 
-        vr._construct_header_dict(header_sections)
+        result = vr._construct_header_dict(header_sections)
+        assert expected_dictionary == result
+
+    @patch.object(VcfReader, "_get_header")
+    def test__open_to_vcf_records(self, get_header):
+        filename = "test.vcf"
+        vr = VcfReader(filename)
+        vr.open_fn = Mock()
+        vr.records_offset = 10
+        vcf = vr._open_to_vcf_records()
+
+        vcf.seek.assert_called_once_with(10)
+
+    @patch.object(VcfReader, "_get_header")
+    @patch.object(
+        VcfReader,
+        "_open_to_vcf_records",
+        return_value=StringIO("#col1\tcol2\tcol3\n" "one\ttwo\tthree\n"),
+    )
+    def test_iter_rows(self, open_to_vcf_records, get_header):
+        filename = "test.vcf"
+        vr = VcfReader(filename)
+        VcfRow = namedtuple("VcfRecord", ["col1", "col2", "col3"])
+        expected = [VcfRow("one", "two", "three")]
+        result = list(vr.iter_rows())
+        assert result == expected
+
+    @patch.object(VcfReader, "_get_header")
+    def test_iter_header_lines(self, get_header):
+        filename = "test.vcf"
+        vr = VcfReader(filename)
+        vr.header = {
+            "foo": {"misc_0": "first"},
+            "bar": {"cats": "last", "all": "middle"},
+        }
+        expected = ["first", "middle", "last"]
+        result = list(vr.iter_header_lines())
+        assert result == expected
+
+    @patch.object(VcfReader, "_get_header")
+    def test__get_open_function(self, get_header):
+        filename = "test.vcf"
+        vr = VcfReader(filename)
+        assert vr.open_fn is open
+
+    @patch.object(VcfReader, "_get_header")
+    @patch.object(
+        VcfReader,
+        "_read_header_lines",
+        return_value=["##INFO=<ID=infoA>", "##INFO=<ID=infoB>"],
+    )
+    def test__read_header_sections(self, read_header_lines, get_header):
+        filename = "test.vcf"
+        vr = VcfReader(filename)
+        expected = [("INFO", ["##INFO=<ID=infoA>", "##INFO=<ID=infoB>"])]
+        result = list(vr._read_header_sections())
+        assert result == expected
+
+    @patch.object(VcfReader, "_get_header")
+    def test__read_header_lines(self, get_header):
+        filename = "test.vcf"
+        vr = VcfReader(filename)
+        vr.open_fn = Mock(
+            return_value=StringIO("##header_line\n" "#CHROM\n" "records\n")
+        )
+        expected = ["##header_line", "#CHROM"]
+        result = list(vr._read_header_lines())
+        assert result == expected

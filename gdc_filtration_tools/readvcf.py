@@ -23,6 +23,7 @@ unique to each section is used.
 import gzip
 import re
 from collections import namedtuple
+from typing import Callable, Generator, List, Tuple
 
 
 class VcfSectionTracker:
@@ -65,6 +66,8 @@ class VcfSectionTracker:
 
         If an ID is detected
         """
+        if line.startswith("#CHROM"):
+            return "COLUMN_NAMES"
         line_section = line[2:].split("=", 1)[0]
         if line_section not in VcfSectionTracker.expected_header_sections:
             if self._not_misc_section():
@@ -138,6 +141,7 @@ class VcfReader:
         self.header = {}
         self.filename = vcf_filename
         self.records_offset = None
+        self.open_fn = self._get_open_function()
         self._get_header()
 
     def _get_header(self) -> None:
@@ -169,14 +173,22 @@ class VcfReader:
                 line_id = strack.get_line_id(line, sid)
                 section[line_id] = line
             header[sid] = section
+        return header
 
-    def iter_rows(self):
+    def _open_to_vcf_records(self):
+        """
+        opens the vcf file and jumps past the header section to the
+        line containing the column names
+        """
+        vcf = self.open_fn(self.filename, "rt")
+        vcf.seek(self.records_offset)
+        return vcf
+
+    def iter_rows(self) -> Generator[tuple]:
         """
         returns an iterator over the variant records
         """
-        open_fn = self._get_open_function()
-        with open_fn(self.filename, "rt") as vcf:
-            vcf.seek(self.records_offset)
+        with self._open_to_vcf_records() as vcf:
             for column_header_line in vcf:
                 column_headers = column_header_line[1:].rstrip().split("\t")
                 break
@@ -184,21 +196,18 @@ class VcfReader:
             for line in vcf:
                 yield (VcfRow(*line.rstrip().split("\t")))
 
-    def iter_header_lines(self):
+    def iter_header_lines(self) -> Generator[str]:
         for sid, section in self.header.items():
             for key in sorted(section.keys()):
                 yield section[key]
 
-            # line = '\n'.join([section[k] for k in sorted(section)])
-            # yield line
-
-    def _get_open_function(self):
+    def _get_open_function(self) -> Callable:
         if self.filename.endswith(".gz"):
             return gzip.open
         else:
             return open
 
-    def _read_header_sections(self):
+    def _read_header_sections(self) -> Generator[Tuple[str, List[str]]]:
         """
         Generator that provides aggregated adjacent lines from
         recognized and miscellaneous sections
@@ -212,18 +221,20 @@ class VcfReader:
                 strack.update_section(line_section)
                 section_lines = []
             section_lines += [line]
+        yield (strack.get_current_section(), section_lines)
 
-    def _read_header_lines(self):
+    def _read_header_lines(self) -> Generator[str]:
         """
         Read lines from vcf header and set records_offset where
         column header line is encountered
         """
-        open_fn = self._get_open_function()
-        with open_fn(self.filename, "rt") as vcf:
+        with self.open_fn(self.filename, "rt") as vcf:
             line = vcf.readline().rstrip()
             while line:
                 if line.startswith("##"):
                     self.records_offset = vcf.tell()
+                    yield line
+                elif line.startswith("#"):
                     yield line
                 else:
                     break

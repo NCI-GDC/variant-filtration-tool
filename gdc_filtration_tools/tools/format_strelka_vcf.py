@@ -13,6 +13,7 @@ Format Strelka2 VCF output and perform additional quality filtration.
 6. Ensure GT format specification exists in header
 """
 
+import os
 from typing import List, Tuple
 
 from pysam import tabix_compress, tabix_index
@@ -32,9 +33,8 @@ def format_strelka_vcf(input_vcf: str, output_vcf: str) -> None:
 
     vcf = VcfReader(input_vcf)
     vcf.header["FORMAT"] = ensure_gt(vcf.header["FORMAT"])
-    temp_vcf = "temp.vcf"
 
-    with open(temp_vcf, "wt") as outvcf:
+    with open(output_vcf.removesuffix(".gz"), "wt") as outvcf:
         # write header
         for line in vcf.iter_header_lines():
             print(line, file=outvcf)
@@ -44,15 +44,11 @@ def format_strelka_vcf(input_vcf: str, output_vcf: str) -> None:
             line = "\t".join(new_row)
             print(line, file=outvcf)
 
-    if output_vcf.enswith(".gz"):
-        tabix_compress(temp_vcf, output_vcf)
-        os.remove(temp_vcf)
-    else:
-        os.rename(temp_vcf, output_vcf)
-    tabix_index(output_vcf, preset="vcf")
+    if output_vcf.endswith(".gz"):
+        tabix_index(output_vcf.removesuffix(".gz"), preset="vcf")
 
 
-def ensure_gt(format_section: List[str]) -> List[str]:
+def ensure_gt(format_section: dict[str, str]) -> dict[str, str]:
     """
     Ensure GT format specification exists in header
     """
@@ -88,7 +84,7 @@ def adjust_SNV(row: Tuple) -> Tuple:
     return row._replace(NORMAL=n_str, TUMOR=t_str)
 
 
-def adjust_INDEL(rec: Tuple) -> Tuple:
+def adjust_INDEL(row: Tuple) -> Tuple:
     """
     Extract somatic GT from NT INFO field
     Extract germline GT from SGT INFO field
@@ -115,7 +111,7 @@ def convert_gt_spec(strelka_gt: str) -> str:
     ref -> 0/0
     het -> 0/1
     hom -> 1/1
-    conflicts -> ./.
+    conflict -> ./.
 
     :param strelka_gt: The strelka genotype as a string
     """
@@ -159,14 +155,19 @@ def get_indel_or_snp_fn(row: Tuple) -> str:
         return adjust_INDEL
     if set(info.keys()) - snv_info_key_set == common_key_set:
         return adjust_SNV
-    # TODO: raise exception
+    raise ValueError(
+        f"Row INFO section contained unexpected set of keys: {row.INFO}\n"
+        f"Expected: {common_key_set}\n"
+        f"And either: {indel_info_key_set}\n"
+        f"OR: {snv_info_key_set}\n"
+    )
 
 
-def parse_info(info_string):
-    return dict(map(parse_field, row.INFO.split(";")))
+def parse_info(info_string: str) -> dict:
+    return dict(map(parse_field, info_string.split(";")))
 
 
-def parse_field(fstring):
+def parse_field(fstring: str) -> Tuple:
     res = fstring.split("=", 1)
     if len(res) == 2:
         return tuple(res)
