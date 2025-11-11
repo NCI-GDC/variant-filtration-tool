@@ -196,7 +196,7 @@ class VcfReader:
             for line in vcf:
                 yield (VcfRow(*line.rstrip().split("\t")))
 
-    def iter_header_lines(self) -> Generator[str]:
+    def iter_header_lines(self) -> Generator[str, None, None]:
         for sid, section in self.header.items():
             for key in sorted(section.keys()):
                 yield section[key]
