@@ -9,3 +9,9 @@ include:
 variables:
   BUILD_PY_VERSION: python3.13
   RELEASE_PY_VERSION: python3.13
+  PIP_INDEX_URL: https://nexus.osdc.io/repository/pypi-all/simple
+
+.parallel:
+  parallel:
+    matrix:
+      - BUILD_PY_VERSION: [python3.13]
