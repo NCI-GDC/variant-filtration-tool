@@ -40,7 +40,7 @@ def format_strelka_vcf(input_vcf: str, output_vcf: str) -> None:
 
     with open(output_vcf.removesuffix(".gz"), "wt") as outvcf:
         # write header
-        logger.info(f"Writing header")
+        logger.info("Writing header")
         for line in vcf.iter_header_lines():
             print(line, file=outvcf)
         # adjust and write rows

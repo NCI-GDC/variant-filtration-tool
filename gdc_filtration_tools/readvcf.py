@@ -21,9 +21,12 @@ unique to each section is used.
 """
 
 import gzip
+import io
 import re
 from collections import namedtuple
 from typing import Callable, Generator, List, Tuple
+
+TextIOWrapperT = io.TextIOWrapper
 
 
 class VcfSectionTracker:
@@ -52,12 +55,12 @@ class VcfSectionTracker:
         "contig",
     }
 
-    def __init__(self, section=None):
+    def __init__(self, section: str = None) -> None:
         self._current_section = section
         self._misc_section_counter = 0
         self._section_id_counter = 0
 
-    def get_line_section(self, line):
+    def get_line_section(self, line: str) -> str:
         """
         Detect section membership of current line.
         If it belongs to an expected section, just pass the name as-is
@@ -77,7 +80,7 @@ class VcfSectionTracker:
                 line_section = self._current_section
         return line_section
 
-    def _not_misc_section(self):
+    def _not_misc_section(self) -> bool:
         """
         Returns True if self._current_section is None or not a misc_N section
         """
@@ -87,7 +90,7 @@ class VcfSectionTracker:
             return True
         return False
 
-    def get_line_id(self, line, line_section):
+    def get_line_id(self, line: str, line_section: str) -> int:
         """
         Return a useful unique identifier for the line
 
@@ -102,7 +105,7 @@ class VcfSectionTracker:
             self._section_id_counter += 1
         return line_id
 
-    def update_section(self, section):
+    def update_section(self, section: str) -> None:
         """
         Called when the section has changed to prepare internal state for
         tracking a new section
@@ -110,7 +113,7 @@ class VcfSectionTracker:
         self._current_section = section
         self._section_id_counter = 0
 
-    def matches_current(self, section):
+    def matches_current(self, section: str) -> bool:
         """
         Return true if section matches currently tracked section.
         Initializes current section if needed before making comparison
@@ -119,7 +122,7 @@ class VcfSectionTracker:
             self.update_section(section)
         return section == self._current_section
 
-    def section_changed(self, section):
+    def section_changed(self, section: str) -> bool:
         """
         Return true if section doesn't match currently tracked section.
         Initializes current section if needed before making comparison
@@ -128,7 +131,7 @@ class VcfSectionTracker:
             self.update_section(section)
         return section != self._current_section
 
-    def get_current_section(self):
+    def get_current_section(self) -> str:
         return self._current_section
 
 
@@ -162,7 +165,7 @@ class VcfReader:
                 header_sections[sid] = section
         return header_sections
 
-    def _construct_header_dict(self, header_sections) -> dict:
+    def _construct_header_dict(self, header_sections: dict) -> dict:
         # convert section line lists to dictionary, adding line IDs
         strack = VcfSectionTracker()
         header = {}
@@ -175,7 +178,7 @@ class VcfReader:
             header[sid] = section
         return header
 
-    def _open_to_vcf_records(self):
+    def _open_to_vcf_records(self) -> TextIOWrapperT:
         """
         opens the vcf file and jumps past the header section to the
         line containing the column names

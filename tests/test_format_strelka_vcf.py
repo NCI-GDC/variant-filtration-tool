@@ -147,7 +147,7 @@ class TestFormatStrelka(TestCase):
         with patch(
             "gdc_filtration_tools.tools.format_strelka_vcf.parse_info",
             return_value=info_keydict,
-        ) as pi:
+        ):
             result = get_indel_or_snp_fn(row)
             assert result is adjust_SNV
 
