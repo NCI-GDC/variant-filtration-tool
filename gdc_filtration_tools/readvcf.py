@@ -24,7 +24,7 @@ import gzip
 import io
 import re
 from collections import namedtuple
-from typing import Callable, Generator, List, Tuple
+from typing import Callable, Generator, List, NamedTuple, Tuple
 
 TextIOWrapperT = io.TextIOWrapper
 
@@ -55,10 +55,10 @@ class VcfSectionTracker:
         "contig",
     }
 
-    def __init__(self, section: str = None) -> None:
-        self._current_section = section
-        self._misc_section_counter = 0
-        self._section_id_counter = 0
+    def __init__(self, section: str | None = None) -> None:
+        self._current_section: str = section
+        self._misc_section_counter: int = 0
+        self._section_id_counter: int = 0
 
     def get_line_section(self, line: str) -> str:
         """
@@ -90,7 +90,7 @@ class VcfSectionTracker:
             return True
         return False
 
-    def get_line_id(self, line: str, line_section: str) -> int:
+    def get_line_id(self, line: str, line_section: str) -> str:
         """
         Return a useful unique identifier for the line
 
@@ -101,7 +101,7 @@ class VcfSectionTracker:
         if line_section in VcfSectionTracker.id_header_sections and match:
             line_id = match.group(1)
         else:
-            line_id = self._section_id_counter
+            line_id = str(self._section_id_counter)
             self._section_id_counter += 1
         return line_id
 
@@ -141,17 +141,17 @@ class VcfReader:
     """
 
     def __init__(self, vcf_filename: str) -> None:
-        self.header = {}
-        self.filename = vcf_filename
-        self.records_offset = None
-        self.open_fn = self._get_open_function()
+        self.header: dict[str, dict[str, str]] = {}
+        self.filename: str = vcf_filename
+        self.records_offset: int | None = None
+        self.open_fn: Callable = self._get_open_function()
         self._get_header()
 
     def _get_header(self) -> None:
         """
         read vcf header
         """
-        header_sections = self._get_header_sections()
+        header_sections: dict[str, [str]] = self._get_header_sections()
         self.header = self._construct_header_dict(header_sections)
 
     def _get_header_sections(self) -> dict:
@@ -193,9 +193,14 @@ class VcfReader:
         """
         with self._open_to_vcf_records() as vcf:
             for column_header_line in vcf:
-                column_headers = column_header_line[1:].rstrip().split("\t")
+                column_headers: list[str] = column_header_line[1:].rstrip().split("\t")
                 break
-            VcfRow = namedtuple("VcfRecord", column_headers)
+            format_index = column_headers.index("FORMAT")
+            # new_fields = tuple([(f, str) for f in column_headers[format_index:]])
+            VcfRow = namedtuple(
+                "VcfRecord",
+                VcfRecordNoSample._fields + tuple(column_headers[format_index:]),
+            )
             for line in vcf:
                 yield (VcfRow(*line.rstrip().split("\t")))
 
@@ -216,7 +221,7 @@ class VcfReader:
         recognized and miscellaneous sections
         """
         strack = VcfSectionTracker()
-        section_lines = []
+        section_lines: list[str] = []
         for line in self._read_header_lines():
             line_section = strack.get_line_section(line)
             if strack.section_changed(line_section):
@@ -242,3 +247,14 @@ class VcfReader:
                 else:
                     break
                 line = vcf.readline().rstrip()
+
+
+class VcfRecordNoSample(NamedTuple):
+    CHROM: str
+    POS: int
+    ID: str
+    REF: str
+    ALT: str
+    QUAL: int | str
+    FILTER: str
+    INFO: str

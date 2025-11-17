@@ -81,7 +81,7 @@ def fill_new_variant_record(
     new_record.alleles = old_record.alleles
     new_record.qual = old_record.qual
     for f in old_record.filter:
-        new_record.filter.add(f)
+        new_record.filter.add(str(f))
     for k, v in old_record.info.items():
         new_record.info[k] = v
     for sample_name, sample_data in old_record.samples.items():

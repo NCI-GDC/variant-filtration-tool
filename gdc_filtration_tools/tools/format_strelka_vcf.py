@@ -13,7 +13,7 @@ Format Strelka2 VCF output and perform additional quality filtration.
 6. Ensure GT format specification exists in header
 """
 
-from typing import Tuple
+from typing import Callable, NamedTuple, Tuple
 
 from pysam import tabix_index
 
@@ -130,7 +130,7 @@ def convert_gt_spec(strelka_gt: str) -> str:
     return conversion[strelka_gt]
 
 
-def get_indel_or_snp_fn(row: Tuple) -> str:
+def get_indel_or_snp_fn(row: Tuple) -> Callable:
     indel_info_key_set = {
         "IC",
         "IHP",

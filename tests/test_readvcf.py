@@ -160,7 +160,7 @@ class TestVcfSectionTracker(TestCase):
         section = "FILTER"
 
         res = vst.get_line_id(line, section)
-        assert res == 0
+        assert res == "0"
 
     def test_get_line_no_id_unknown_section(self):
         """
@@ -171,7 +171,7 @@ class TestVcfSectionTracker(TestCase):
         section = "unknown"
 
         res = vst.get_line_id(line, section)
-        assert res == 0
+        assert res == "0"
 
     def test_update_section(self):
         """
@@ -268,7 +268,7 @@ class TestVcfReader(TestCase):
         vr = VcfReader(filename)
         header_sections = {"misc_0": ["line1"]}
 
-        expected_dictionary = {"misc_0": {0: "line1"}}
+        expected_dictionary = {"misc_0": {"0": "line1"}}
 
         result = vr._construct_header_dict(header_sections)
         assert expected_dictionary == result
@@ -287,13 +287,45 @@ class TestVcfReader(TestCase):
     @patch.object(
         VcfReader,
         "_open_to_vcf_records",
-        return_value=StringIO("#col1\tcol2\tcol3\n" "one\ttwo\tthree\n"),
+        return_value=StringIO(
+            "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tNORMAL\tTUMOR\n"
+            "chr1\t100\t200\tA\tT\t0\tPASS\tinfo\tformat\tnormal\ttumor\n"
+        ),
     )
     def test_iter_rows(self, open_to_vcf_records, get_header):
         filename = "test.vcf"
         vr = VcfReader(filename)
-        VcfRow = namedtuple("VcfRecord", ["col1", "col2", "col3"])
-        expected = [VcfRow("one", "two", "three")]
+        VcfRow = namedtuple(
+            "VcfRecord",
+            [
+                "CHROM",
+                "POS",
+                "ID",
+                "REF",
+                "ALT",
+                "QUAL",
+                "FILTER",
+                "INFO",
+                "FORMAT",
+                "NORMAL",
+                "TUMOR",
+            ],
+        )
+        expected = [
+            VcfRow(
+                "chr1",
+                "100",
+                "200",
+                "A",
+                "T",
+                "0",
+                "PASS",
+                "info",
+                "format",
+                "normal",
+                "tumor",
+            )
+        ]
         result = list(vr.iter_rows())
         assert result == expected
 
