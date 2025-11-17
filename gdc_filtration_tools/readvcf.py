@@ -196,7 +196,6 @@ class VcfReader:
                 column_headers: list[str] = column_header_line[1:].rstrip().split("\t")
                 break
             format_index = column_headers.index("FORMAT")
-            # new_fields = tuple([(f, str) for f in column_headers[format_index:]])
             VcfRow = namedtuple(
                 "VcfRecord",
                 VcfRecordNoSample._fields + tuple(column_headers[format_index:]),
