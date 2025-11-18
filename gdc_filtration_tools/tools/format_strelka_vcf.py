@@ -13,12 +13,12 @@ Format Strelka2 VCF output and perform additional quality filtration.
 6. Ensure GT format specification exists in header
 """
 
-from typing import Callable, NamedTuple, Tuple
+from typing import Callable, Tuple
 
 from pysam import tabix_index
 
 from gdc_filtration_tools.logger import Logger
-from gdc_filtration_tools.readvcf import VcfReader
+from gdc_filtration_tools.readvcf import GdcVcfRecord, VcfReader
 
 
 def format_strelka_vcf(input_vcf: str, output_vcf: str) -> None:
@@ -48,8 +48,7 @@ def format_strelka_vcf(input_vcf: str, output_vcf: str) -> None:
         count = 0
         for row in vcf.iter_rows():
             new_row = adjust_record(row)
-            line = "\t".join(new_row)
-            print(line, file=outvcf)
+            print(str(new_row), file=outvcf)
             if count % 10000:
                 logger.info(f"written {count} records")
         logger.info("Finished writing records")
@@ -69,7 +68,7 @@ def ensure_gt(format_section: dict[str, str]) -> dict[str, str]:
     return format_section
 
 
-def adjust_record(row: Tuple) -> Tuple:
+def adjust_record(row: GdcVcfRecord) -> GdcVcfRecord:
     """
     Orchestrate adjustments to individual record
     """
@@ -77,7 +76,7 @@ def adjust_record(row: Tuple) -> Tuple:
     return adjust_fn(row)
 
 
-def adjust_SNV(row: Tuple) -> Tuple:
+def adjust_SNV(row: GdcVcfRecord) -> GdcVcfRecord:
     """
     Extract germline GT from NT INFO field
     Set somatic GT to 0/1
@@ -92,10 +91,10 @@ def adjust_SNV(row: Tuple) -> Tuple:
     # build replacement strings
     n_str = ":".join([germline_GT] + n_values)
     t_str = ":".join([somatic_GT] + t_values)
-    return row._replace(NORMAL=n_str, TUMOR=t_str)
+    return row.replace(NORMAL=n_str, TUMOR=t_str)
 
 
-def adjust_INDEL(row: Tuple) -> Tuple:
+def adjust_INDEL(row: GdcVcfRecord) -> GdcVcfRecord:
     """
     Extract somatic GT from NT INFO field
     Extract germline GT from SGT INFO field
@@ -112,7 +111,7 @@ def adjust_INDEL(row: Tuple) -> Tuple:
     # build replacement strings
     n_str = ":".join([germline_GT] + n_values)
     t_str = ":".join([somatic_GT] + t_values)
-    return row._replace(NORMAL=n_str, TUMOR=t_str)
+    return row.replace(NORMAL=n_str, TUMOR=t_str)
 
 
 def convert_gt_spec(strelka_gt: str) -> str:
@@ -130,7 +129,7 @@ def convert_gt_spec(strelka_gt: str) -> str:
     return conversion[strelka_gt]
 
 
-def get_indel_or_snp_fn(row: Tuple) -> Callable:
+def get_indel_or_snp_fn(row: GdcVcfRecord) -> Callable:
     indel_info_key_set = {
         "IC",
         "IHP",

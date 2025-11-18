@@ -1,9 +1,8 @@
-from collections import namedtuple
 from io import StringIO
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
-from gdc_filtration_tools.readvcf import VcfReader, VcfSectionTracker
+from gdc_filtration_tools.readvcf import GdcVcfRecord, VcfReader, VcfSectionTracker
 
 
 class TestVcfSectionTracker(TestCase):
@@ -51,8 +50,7 @@ class TestVcfSectionTracker(TestCase):
         assert vst._misc_section_counter == 0
         assert vst._section_id_counter == 0
 
-    @patch.object(VcfSectionTracker, "_not_misc_section")
-    def test__get_line_section_expected_header(self, nmsfn):
+    def test__get_line_section_expected_header(self):
         """
         Test behavior when line section is in expected set
         """
@@ -62,10 +60,8 @@ class TestVcfSectionTracker(TestCase):
 
         res = vst.get_line_section(line)
         assert res == expected_result
-        nmsfn.assert_not_called()
 
-    @patch.object(VcfSectionTracker, "_not_misc_section", return_value=True)
-    def test__get_line_section_initial_unexpected_header(self, nmsfn):
+    def test__get_line_section_initial_unexpected_header(self):
         """
         Test behavior when line section is unexpected and current
         section is not set
@@ -78,10 +74,8 @@ class TestVcfSectionTracker(TestCase):
         res = vst.get_line_section(line)
         assert res == expected_result
         assert getattr(vst, "_misc_section_counter") == 1
-        nmsfn.assert_called_once()
 
-    @patch.object(VcfSectionTracker, "_not_misc_section", return_value=False)
-    def test__get_line_section_subsequent_unexpected_header(self, nmsfn):
+    def test__get_line_section_subsequent_unexpected_header(self):
         """
         Test behavior when line section is unexpected and current
         section is already a misc_N section
@@ -95,10 +89,8 @@ class TestVcfSectionTracker(TestCase):
         res = vst.get_line_section(line)
         assert res == expected_result
         assert getattr(vst, "_misc_section_counter") == 1
-        nmsfn.assert_called_once()
 
-    @patch.object(VcfSectionTracker, "_not_misc_section")
-    def test__get_line_section_column_names(self, nmsfn):
+    def test__get_line_section_column_names(self):
         """
         Test behavior when line section is in expected set
         """
@@ -108,37 +100,6 @@ class TestVcfSectionTracker(TestCase):
 
         res = vst.get_line_section(line)
         assert res == expected_result
-        nmsfn.assert_not_called()
-
-    def test__not_misc_section_no_current_section(self):
-        """
-        Test behavior when self._current_section is None
-        """
-        vst = VcfSectionTracker()
-        vst._current_section = None
-
-        res = vst._not_misc_section()
-        assert res is True
-
-    def test__not_misc_section_misc_current_section(self):
-        """
-        Test behavior when self._current_section is a misc. section
-        """
-        vst = VcfSectionTracker()
-        vst._current_section = "misc_0"
-
-        res = vst._not_misc_section()
-        assert res is False
-
-    def test__not_misc_section_other_current_section(self):
-        """
-        Test behavior when self._current_section is a named section
-        """
-        vst = VcfSectionTracker()
-        vst._current_section = "other"
-
-        res = vst._not_misc_section()
-        assert res is True
 
     def test_get_line_id_known_section(self):
         """
@@ -274,30 +235,29 @@ class TestVcfReader(TestCase):
         assert expected_dictionary == result
 
     @patch.object(VcfReader, "_get_header")
-    def test__open_to_vcf_records(self, get_header):
+    def test_iter_rows(self, get_header):
         filename = "test.vcf"
         vr = VcfReader(filename)
-        vr.open_fn = Mock()
         vr.records_offset = 10
-        vcf = vr._open_to_vcf_records()
-
-        vcf.seek.assert_called_once_with(10)
-
-    @patch.object(VcfReader, "_get_header")
-    @patch.object(
-        VcfReader,
-        "_open_to_vcf_records",
-        return_value=StringIO(
+        mock_file_io = StringIO(
             "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tNORMAL\tTUMOR\n"
-            "chr1\t100\t200\tA\tT\t0\tPASS\tinfo\tformat\tnormal\ttumor\n"
-        ),
-    )
-    def test_iter_rows(self, open_to_vcf_records, get_header):
-        filename = "test.vcf"
-        vr = VcfReader(filename)
-        VcfRow = namedtuple(
-            "VcfRecord",
-            [
+            "chr1\t100\t200\tA\tT\t.\tPASS\tinfo\tformat\tnormal\ttumor\n"
+        )
+        mock_file_io.seek = Mock()
+        vr.open_fn = MagicMock(return_value=mock_file_io)
+        expected = GdcVcfRecord(
+            CHROM="chr1",
+            POS="100",
+            ID="200",
+            REF="A",
+            ALT="T",
+            QUAL=".",
+            FILTER="PASS",
+            INFO="info",
+            FORMAT="format",
+            NORMAL="normal",
+            TUMOR="tumor",
+            COLUMN_NAMES=[
                 "CHROM",
                 "POS",
                 "ID",
@@ -311,23 +271,10 @@ class TestVcfReader(TestCase):
                 "TUMOR",
             ],
         )
-        expected = [
-            VcfRow(
-                "chr1",
-                "100",
-                "200",
-                "A",
-                "T",
-                "0",
-                "PASS",
-                "info",
-                "format",
-                "normal",
-                "tumor",
-            )
-        ]
         result = list(vr.iter_rows())
-        assert result == expected
+        assert result == [expected]
+        vr.open_fn.assert_called_once_with(filename, "rt")
+        mock_file_io.seek.assert_called_once_with(10)
 
     @patch.object(VcfReader, "_get_header")
     def test_iter_header_lines(self, get_header):

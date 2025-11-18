@@ -62,7 +62,7 @@ class TestFormatStrelka(TestCase):
             adjust_SNV(row)
             pi.assert_called_once_with(row.INFO)
             cgs.assert_called_once_with("nt value")
-            row._replace.assert_called_once_with(NORMAL="0/0:3:5", TUMOR="0/1:4:6")
+            row.replace.assert_called_once_with(NORMAL="0/0:3:5", TUMOR="0/1:4:6")
 
     def test_adjust_INDEL(self):
         row = Mock()
@@ -83,7 +83,7 @@ class TestFormatStrelka(TestCase):
             adjust_INDEL(row)
             pi.assert_called_once_with(row.INFO)
             assert cgs.call_args_list == [call("germline"), call("somatic")]
-            row._replace.assert_called_once_with(NORMAL="0/0:3:5", TUMOR="0/1:4:6")
+            row.replace.assert_called_once_with(NORMAL="0/0:3:5", TUMOR="0/1:4:6")
 
     def test_convert_gt_spec(self):
         assert convert_gt_spec("ref") == "0/0"

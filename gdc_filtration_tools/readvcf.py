@@ -23,10 +23,108 @@ unique to each section is used.
 import gzip
 import io
 import re
-from collections import namedtuple
-from typing import Callable, Generator, List, NamedTuple, Tuple
+from dataclasses import dataclass
+from typing import Callable, Generator, List, NamedTuple, Self, Tuple
 
 TextIOWrapperT = io.TextIOWrapper
+
+
+@dataclass
+class GdcVcfRecord:
+    """
+    Class for representing a vcf data row with the samples 'TUMOR' and 'NORMAL'
+    """
+
+    CHROM: str
+    POS: str
+    ID: str
+    REF: str
+    ALT: str
+    QUAL: str
+    FILTER: str
+    INFO: str
+    FORMAT: str
+    NORMAL: str
+    TUMOR: str
+    COLUMN_NAMES: list[str]
+
+    @classmethod
+    def from_line(cls, line: str, column_names: list[str]) -> Self:
+        """
+        create record from a vcf line and the ordered column_names
+        """
+        line_dict: dict[str, str] = {
+            k: v for k, v in zip(column_names, line.rstrip().split("\t"))
+        }
+        return cls(
+            CHROM=line_dict["CHROM"],
+            POS=line_dict["POS"],
+            ID=line_dict["ID"],
+            REF=line_dict["REF"],
+            ALT=line_dict["ALT"],
+            QUAL=line_dict["QUAL"],
+            FILTER=line_dict["FILTER"],
+            INFO=line_dict["INFO"],
+            FORMAT=line_dict["FORMAT"],
+            NORMAL=line_dict["NORMAL"],
+            TUMOR=line_dict["TUMOR"],
+            COLUMN_NAMES=column_names,
+        )
+        # self.CHROM: str = line_dict['CHROM']
+        # self.POS: int = int(line_dict['POS'])
+        # self.ID: str = line_dict['ID']
+        # self.REF: str = line_dict['REF']
+        # self.ALT: str = line_dict['ALT']
+        # self.QUAL: str = line_dict['QUAL']
+        # self.FILTER: str = line_dict['FILTER']
+        # self.INFO: str = line_dict['INFO']
+        # self.FORMAT: str = line_dict['FORMAT']
+        # self.NORMAL: str = line_dict['NORMAL']
+        # self.TUMOR: str = line_dict['TUMOR']
+        # self._column_names = column_names
+
+    def replace(
+        self,
+        CHROM: str | None = None,
+        POS: str | None = None,
+        ID: str | None = None,
+        REF: str | None = None,
+        ALT: str | None = None,
+        QUAL: str | None = None,
+        FILTER: str | None = None,
+        INFO: str | None = None,
+        FORMAT: str | None = None,
+        NORMAL: str | None = None,
+        TUMOR: str | None = None,
+        COLUMN_NAMES: list[str] | None = None,
+    ) -> Self:
+        """
+        Create a new instance of GdcVcfRecord with the given substitutions
+        """
+        return self.__class__(
+            CHROM=CHROM if CHROM is not None else self.CHROM,
+            POS=POS if POS is not None else self.POS,
+            ID=ID if ID is not None else self.ID,
+            REF=REF if REF is not None else self.REF,
+            ALT=ALT if ALT is not None else self.ALT,
+            QUAL=QUAL if QUAL is not None else self.QUAL,
+            FILTER=FILTER if FILTER is not None else self.FILTER,
+            INFO=INFO if INFO is not None else self.INFO,
+            FORMAT=FORMAT if FORMAT is not None else self.FORMAT,
+            NORMAL=NORMAL if NORMAL is not None else self.NORMAL,
+            TUMOR=TUMOR if TUMOR is not None else self.TUMOR,
+            COLUMN_NAMES=COLUMN_NAMES
+            if COLUMN_NAMES is not None
+            else self.COLUMN_NAMES,
+        )
+
+    def __str__(self) -> str:
+        """
+        String representation as a tab-separated row of columns ordered
+        by self.COLUMN_NAMES
+        """
+        fields_in_order = [getattr(self, field) for field in self.COLUMN_NAMES]
+        return "\t".join(fields_in_order)
 
 
 class VcfSectionTracker:
@@ -56,7 +154,7 @@ class VcfSectionTracker:
     }
 
     def __init__(self, section: str | None = None) -> None:
-        self._current_section: str = section
+        self._current_section: str | None = section
         self._misc_section_counter: int = 0
         self._section_id_counter: int = 0
 
@@ -73,22 +171,16 @@ class VcfSectionTracker:
             return "COLUMN_NAMES"
         line_section = line[2:].split("=", 1)[0]
         if line_section not in VcfSectionTracker.expected_header_sections:
-            if self._not_misc_section():
+            if self._current_section is not None and self._current_section.startswith(
+                "misc_"
+            ):
+                # line belongs to an established misc_ section
+                line_section = self._current_section
+            else:
+                # first line ever or update to new misc_ section
                 line_section = f"misc_{self._misc_section_counter}"
                 self._misc_section_counter += 1
-            else:
-                line_section = self._current_section
         return line_section
-
-    def _not_misc_section(self) -> bool:
-        """
-        Returns True if self._current_section is None or not a misc_N section
-        """
-        if self._current_section is None:
-            return True
-        if not self._current_section.startswith("misc_"):
-            return True
-        return False
 
     def get_line_id(self, line: str, line_section: str) -> str:
         """
@@ -131,7 +223,7 @@ class VcfSectionTracker:
             self.update_section(section)
         return section != self._current_section
 
-    def get_current_section(self) -> str:
+    def get_current_section(self) -> str | None:
         return self._current_section
 
 
@@ -151,13 +243,13 @@ class VcfReader:
         """
         read vcf header
         """
-        header_sections: dict[str, [str]] = self._get_header_sections()
+        header_sections: dict[str, list[str]] = self._get_header_sections()
         self.header = self._construct_header_dict(header_sections)
 
     def _get_header_sections(self) -> dict:
         # add section to header dictionary,
         # gather lines from same section that have been dispersed
-        header_sections = {}
+        header_sections: dict = {}
         for sid, section in self._read_header_sections():
             if sid in header_sections:
                 header_sections[sid].extend(section)
@@ -178,30 +270,32 @@ class VcfReader:
             header[sid] = section
         return header
 
-    def _open_to_vcf_records(self) -> TextIOWrapperT:
-        """
-        opens the vcf file and jumps past the header section to the
-        line containing the column names
-        """
-        vcf = self.open_fn(self.filename, "rt")
-        vcf.seek(self.records_offset)
-        return vcf
+    # def _open_to_vcf_records(self) -> TextIOWrapperT:
+    #     """
+    #     opens the vcf file and jumps past the header section to the
+    #     line containing the column names
+    #     """
+    #     vcf = self.open_fn(self.filename, "rt")
+    #     vcf.seek(self.records_offset)
+    #     return vcf
 
-    def iter_rows(self) -> Generator[tuple, None, None]:
+    def iter_rows(self) -> Generator[GdcVcfRecord, None, None]:
         """
         returns an iterator over the variant records
         """
-        with self._open_to_vcf_records() as vcf:
+        with self.open_fn(self.filename, "rt") as vcf:
+            vcf.seek(self.records_offset)
             for column_header_line in vcf:
                 column_headers: list[str] = column_header_line[1:].rstrip().split("\t")
                 break
-            format_index = column_headers.index("FORMAT")
-            VcfRow = namedtuple(
-                "VcfRecord",
-                VcfRecordNoSample._fields + tuple(column_headers[format_index:]),
-            )
+
+            # format_index = column_headers.index("FORMAT")
+            # VcfRow = namedtuple(
+            #     "VcfRecord",
+            #     VcfRecordNoSample._fields + tuple(column_headers[format_index:]),
+            # )
             for line in vcf:
-                yield (VcfRow(*line.rstrip().split("\t")))
+                yield GdcVcfRecord.from_line(line, column_headers)
 
     def iter_header_lines(self) -> Generator[str, None, None]:
         for sid, section in self.header.items():
@@ -214,7 +308,9 @@ class VcfReader:
         else:
             return open
 
-    def _read_header_sections(self) -> Generator[Tuple[str, List[str]], None, None]:
+    def _read_header_sections(
+        self,
+    ) -> Generator[Tuple[str | None, List[str]], None, None]:
         """
         Generator that provides aggregated adjacent lines from
         recognized and miscellaneous sections
@@ -257,3 +353,6 @@ class VcfRecordNoSample(NamedTuple):
     QUAL: int | str
     FILTER: str
     INFO: str
+    FORMAT: str
+    NORMAL: str
+    TUMOR: str
