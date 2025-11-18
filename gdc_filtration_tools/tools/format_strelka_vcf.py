@@ -13,7 +13,7 @@ Format Strelka2 VCF output and perform additional quality filtration.
 6. Ensure GT format specification exists in header
 """
 
-from typing import Callable, Tuple
+from typing import Tuple
 
 from pysam import tabix_index
 
@@ -68,12 +68,12 @@ def ensure_gt(format_section: dict[str, str]) -> dict[str, str]:
     return format_section
 
 
-def adjust_record(row: GdcVcfRecord) -> GdcVcfRecord:
-    """
-    Orchestrate adjustments to individual record
-    """
-    adjust_fn = get_indel_or_snp_fn(row)
-    return adjust_fn(row)
+# def adjust_record(row: GdcVcfRecord) -> GdcVcfRecord:
+#     """
+#     Orchestrate adjustments to individual record
+#     """
+#     adjust_fn = get_indel_or_snp_fn(row)
+#     return adjust_fn(row)
 
 
 def adjust_SNV(row: GdcVcfRecord) -> GdcVcfRecord:
@@ -129,7 +129,7 @@ def convert_gt_spec(strelka_gt: str) -> str:
     return conversion[strelka_gt]
 
 
-def get_indel_or_snp_fn(row: GdcVcfRecord) -> Callable:
+def adjust_record(row: GdcVcfRecord) -> GdcVcfRecord:
     indel_info_key_set = {
         "IC",
         "IHP",
@@ -162,9 +162,9 @@ def get_indel_or_snp_fn(row: GdcVcfRecord) -> Callable:
     }
     info = parse_info(row.INFO)
     if set(info.keys()) - indel_info_key_set == common_key_set:
-        return adjust_INDEL
+        return adjust_INDEL(row)
     if set(info.keys()) - snv_info_key_set == common_key_set:
-        return adjust_SNV
+        return adjust_SNV(row)
     raise ValueError(
         f"Row INFO section contained unexpected set of keys: {row.INFO}\n"
         f"Expected: {common_key_set}\n"

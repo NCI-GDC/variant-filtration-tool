@@ -70,18 +70,6 @@ class GdcVcfRecord:
             TUMOR=line_dict["TUMOR"],
             COLUMN_NAMES=column_names,
         )
-        # self.CHROM: str = line_dict['CHROM']
-        # self.POS: int = int(line_dict['POS'])
-        # self.ID: str = line_dict['ID']
-        # self.REF: str = line_dict['REF']
-        # self.ALT: str = line_dict['ALT']
-        # self.QUAL: str = line_dict['QUAL']
-        # self.FILTER: str = line_dict['FILTER']
-        # self.INFO: str = line_dict['INFO']
-        # self.FORMAT: str = line_dict['FORMAT']
-        # self.NORMAL: str = line_dict['NORMAL']
-        # self.TUMOR: str = line_dict['TUMOR']
-        # self._column_names = column_names
 
     def replace(
         self,
@@ -270,15 +258,6 @@ class VcfReader:
             header[sid] = section
         return header
 
-    # def _open_to_vcf_records(self) -> TextIOWrapperT:
-    #     """
-    #     opens the vcf file and jumps past the header section to the
-    #     line containing the column names
-    #     """
-    #     vcf = self.open_fn(self.filename, "rt")
-    #     vcf.seek(self.records_offset)
-    #     return vcf
-
     def iter_rows(self) -> Generator[GdcVcfRecord, None, None]:
         """
         returns an iterator over the variant records
@@ -288,12 +267,6 @@ class VcfReader:
             for column_header_line in vcf:
                 column_headers: list[str] = column_header_line[1:].rstrip().split("\t")
                 break
-
-            # format_index = column_headers.index("FORMAT")
-            # VcfRow = namedtuple(
-            #     "VcfRecord",
-            #     VcfRecordNoSample._fields + tuple(column_headers[format_index:]),
-            # )
             for line in vcf:
                 yield GdcVcfRecord.from_line(line, column_headers)
 

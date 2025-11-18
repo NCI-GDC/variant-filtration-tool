@@ -1,5 +1,5 @@
 from unittest import TestCase
-from unittest.mock import Mock, call, patch
+from unittest.mock import MagicMock, Mock, call, mock_open, patch
 
 from gdc_filtration_tools.tools.format_strelka_vcf import (
     adjust_INDEL,
@@ -8,22 +8,47 @@ from gdc_filtration_tools.tools.format_strelka_vcf import (
     convert_gt_spec,
     ensure_gt,
     format_strelka_vcf,
-    get_indel_or_snp_fn,
     parse_field,
     parse_info,
 )
 
 
 class TestFormatStrelka(TestCase):
-    @patch("__main__.open")
-    @patch("__main__.print")
-    @patch("gdc_filtration_tools.tools.format_strelka_vcf.VcfReader")
+    @patch("gdc_filtration_tools.tools.format_strelka_vcf.print")
     @patch("gdc_filtration_tools.tools.format_strelka_vcf.ensure_gt")
-    def test_format_strelka_vcf(self, ensure_gt, vcfreader, print_fn, open_fn):
-        format_strelka_vcf("input.vcf", "output.vcf")
+    @patch(
+        "gdc_filtration_tools.tools.format_strelka_vcf.adjust_record",
+        return_value="new_row",
+    )
+    @patch("gdc_filtration_tools.tools.format_strelka_vcf.tabix_index")
+    def test_format_strelka_vcf(self, tabix_index, adjust_record, ensure_gt, print_fn):
+        vcf = MagicMock()
+        # fd = {"FORMAT": 'header_format'}
+        vcf.header.__getitem__.return_value = "header_format"
+        vcf.iter_header_lines = Mock(return_value=["header_line"])
+        vcf.iter_rows = Mock(return_value=["row"])
+        open_fn = mock_open()
 
-        vcfreader.assert_called_once_with("input.vcf")
-        ensure_gt.assert_called_once()
+        with (
+            patch("gdc_filtration_tools.tools.format_strelka_vcf.open", open_fn),
+            patch(
+                "gdc_filtration_tools.tools.format_strelka_vcf.VcfReader",
+                return_value=vcf,
+            ) as vcfreader,
+        ):
+            format_strelka_vcf("input.vcf", "out.vcf.gz")
+
+            vcfreader.assert_called_once_with("input.vcf")
+            ensure_gt.assert_called_once_with("header_format")
+            open_fn.assert_called_once_with("out.vcf", "wt")
+            handle = open_fn()
+            print_call_list = [
+                call("header_line", file=handle),
+                call("new_row", file=handle),
+            ]
+            assert print_fn.call_args_list == print_call_list
+            adjust_record.assert_called_once_with("row")
+            tabix_index.assert_called_once_with("out.vcf", preset="vcf")
 
     def test_ensure_gt(self):
         fs = {"FOO": "FOO"}
@@ -31,17 +56,6 @@ class TestFormatStrelka(TestCase):
         expected["GT"] = '##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">'
         result = ensure_gt(fs)
         assert result == expected
-
-    def test_adjust_record(self):
-        adjust_fn = Mock()
-        with patch(
-            "gdc_filtration_tools.tools.format_strelka_vcf.get_indel_or_snp_fn",
-            return_value=adjust_fn,
-        ) as iors:
-            row = ("one", "two")
-            adjust_record(row)
-            iors.assert_called_once_with(row)
-            adjust_fn.assert_called_once_with(row)
 
     def test_adjust_SNV(self):
         row = Mock()
@@ -91,8 +105,10 @@ class TestFormatStrelka(TestCase):
         assert convert_gt_spec("hom") == "1/1"
         assert convert_gt_spec("conflict") == "./."
 
-    def test_get_indel_or_snp_fn_indel(self):
-        indel_set = {
+    @patch("gdc_filtration_tools.tools.format_strelka_vcf.adjust_INDEL")
+    @patch("gdc_filtration_tools.tools.format_strelka_vcf.adjust_SNV")
+    def test_adjust_record(self, adjust_snv, adjust_indel):
+        indel_info_key_set = {
             "IC",
             "IHP",
             "QSI",
@@ -103,25 +119,6 @@ class TestFormatStrelka(TestCase):
             "TQSI",
             "TQSI_NT",
         }
-        common_key_set = {
-            "MQ",
-            "MQ0",
-            "NT",
-            "SGT",
-            "SOMATIC",
-            "SomaticEVS",
-        }
-        all_keys = indel_set | common_key_set
-        row = Mock()
-        info_keydict = {k: v for k, v in zip(all_keys, range(len(all_keys)))}
-        with patch(
-            "gdc_filtration_tools.tools.format_strelka_vcf.parse_info",
-            return_value=info_keydict,
-        ):
-            result = get_indel_or_snp_fn(row)
-            assert result is adjust_INDEL
-
-    def test_get_indel_or_snp_fn_snv(self):
         snv_info_key_set = {
             "ACGTNacgtnMINUS",
             "ACGTNacgtnPLUS",
@@ -141,17 +138,26 @@ class TestFormatStrelka(TestCase):
             "SOMATIC",
             "SomaticEVS",
         }
-        all_keys = snv_info_key_set | common_key_set
+        indel_set = indel_info_key_set | common_key_set
+        snv_set = snv_info_key_set | common_key_set
         row = Mock()
-        info_keydict = {k: v for k, v in zip(all_keys, range(len(all_keys)))}
+        indel_keydict = {k: v for k, v in zip(indel_set, range(len(indel_set)))}
+        snv_keydict = {k: v for k, v in zip(snv_set, range(len(snv_set)))}
         with patch(
             "gdc_filtration_tools.tools.format_strelka_vcf.parse_info",
-            return_value=info_keydict,
+            return_value=indel_keydict,
         ):
-            result = get_indel_or_snp_fn(row)
-            assert result is adjust_SNV
+            adjust_record(row)
+            adjust_indel.assert_called_once_with(row)
 
-    def test_get_indel_or_snp_fn_error(self):
+        with patch(
+            "gdc_filtration_tools.tools.format_strelka_vcf.parse_info",
+            return_value=snv_keydict,
+        ):
+            adjust_record(row)
+            adjust_snv.assert_called_once_with(row)
+
+    def test_adjust_record_unknown(self):
         key_set = {"NOT" "EXPECTED"}
         row = Mock()
         info_keydict = {k: v for k, v in zip(key_set, range(len(key_set)))}
@@ -159,7 +165,7 @@ class TestFormatStrelka(TestCase):
             "gdc_filtration_tools.tools.format_strelka_vcf.parse_info",
             return_value=info_keydict,
         ):
-            self.assertRaises(ValueError, get_indel_or_snp_fn, row)
+            self.assertRaises(ValueError, adjust_record, row)
 
     @patch(
         "gdc_filtration_tools.tools.format_strelka_vcf.parse_field",
