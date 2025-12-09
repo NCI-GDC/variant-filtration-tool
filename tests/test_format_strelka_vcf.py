@@ -137,7 +137,7 @@ class TestFormatStrelka(TestCase):
         row.INFO = "row_info"
         result = qsi_filter(row)
         pi.assert_called_once_with("row_info")
-        assert result == True
+        assert result
 
     def test_convert_gt_spec(self):
         assert convert_gt_spec("ref") == "0/0"

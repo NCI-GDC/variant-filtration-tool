@@ -131,7 +131,6 @@ def adjust_INDEL(row: GdcVcfRecord) -> GdcVcfRecord:
         flt_items = [flt for flt in row.FILTER.split(";") if flt != "PASS"]
         flt_items += ["LowQSI"]
         flt_str = ";".join(flt_items)
-    info = row.INFO.split(":")
     return row.replace(NORMAL=n_str, TUMOR=t_str, FORMAT=fmt, FILTER=flt_str)
 
 
