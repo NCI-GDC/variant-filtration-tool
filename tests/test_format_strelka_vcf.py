@@ -2,6 +2,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, Mock, call, mock_open, patch
 
 from gdc_filtration_tools.tools.format_strelka_vcf import (
+    add_filter,
     adjust_INDEL,
     adjust_record,
     adjust_SNV,
@@ -10,21 +11,25 @@ from gdc_filtration_tools.tools.format_strelka_vcf import (
     format_strelka_vcf,
     parse_field,
     parse_info,
+    qsi_filter,
 )
 
 
 class TestFormatStrelka(TestCase):
     @patch("gdc_filtration_tools.tools.format_strelka_vcf.print")
+    @patch("gdc_filtration_tools.tools.format_strelka_vcf.add_filter")
     @patch("gdc_filtration_tools.tools.format_strelka_vcf.ensure_gt")
     @patch(
         "gdc_filtration_tools.tools.format_strelka_vcf.adjust_record",
         return_value="new_row",
     )
     @patch("gdc_filtration_tools.tools.format_strelka_vcf.tabix_index")
-    def test_format_strelka_vcf(self, tabix_index, adjust_record, ensure_gt, print_fn):
+    def test_format_strelka_vcf(
+        self, tabix_index, adjust_record, ensure_gt, add_filter, print_fn
+    ):
         vcf = MagicMock()
         # fd = {"FORMAT": 'header_format'}
-        vcf.header.__getitem__.return_value = "header_format"
+        vcf.header.__getitem__.side_effect = ["header_format", "header_filter"]
         vcf.iter_header_lines = Mock(return_value=["header_line"])
         vcf.iter_rows = Mock(return_value=["row"])
         open_fn = mock_open()
@@ -40,6 +45,7 @@ class TestFormatStrelka(TestCase):
 
             vcfreader.assert_called_once_with("input.vcf")
             ensure_gt.assert_called_once_with("header_format")
+            add_filter.assert_called_once_with("header_filter")
             open_fn.assert_called_once_with("out.vcf", "wt")
             handle = open_fn()
             print_call_list = [
@@ -57,11 +63,21 @@ class TestFormatStrelka(TestCase):
         result = ensure_gt(fs)
         assert result == expected
 
+    def test_add_filter(self):
+        fs = {"FOO": "FOO"}
+        expected = fs.copy()
+        expected["LowQSI"] = (
+            '##FILTER=<ID=LowQSI,Description="QSI value is at or below 10">'
+        )
+        result = add_filter(fs)
+        assert result == expected
+
     def test_adjust_SNV(self):
         row = Mock()
-        row.NORMAL = "bad:3:5"
-        row.TUMOR = "4:6:bad"
+        row.NORMAL = "3:5"
+        row.TUMOR = "4:6"
         row.INFO = "row_info"
+        row.FORMAT = "row_format"
 
         with (
             patch(
@@ -76,28 +92,52 @@ class TestFormatStrelka(TestCase):
             adjust_SNV(row)
             pi.assert_called_once_with(row.INFO)
             cgs.assert_called_once_with("nt value")
-            row.replace.assert_called_once_with(NORMAL="0/0:3:5", TUMOR="0/1:4:6")
+            row.replace.assert_called_once_with(
+                NORMAL="0/0:3:5", TUMOR="0/1:4:6", FORMAT="GT:row_format"
+            )
 
     def test_adjust_INDEL(self):
         row = Mock()
-        row.NORMAL = "bad:3:5"
-        row.TUMOR = "4:6:bad"
+        row.NORMAL = "3:5"
+        row.TUMOR = "4:6"
         row.INFO = "row_info"
+        row.FORMAT = "row_format"
+        row.FILTER = "PASS"
 
         with (
             patch(
                 "gdc_filtration_tools.tools.format_strelka_vcf.parse_info",
-                return_value={"NT": "germline", "SGT": "foo->somatic"},
+                return_value={"NT": "germline", "SGT": "foo->somatic", "QSI": 5},
             ) as pi,
             patch(
                 "gdc_filtration_tools.tools.format_strelka_vcf.convert_gt_spec",
                 side_effect=["0/0", "0/1"],
             ) as cgs,
+            patch(
+                "gdc_filtration_tools.tools.format_strelka_vcf.qsi_filter",
+                return_value=True,
+            ),
         ):
             adjust_INDEL(row)
             pi.assert_called_once_with(row.INFO)
             assert cgs.call_args_list == [call("germline"), call("somatic")]
-            row.replace.assert_called_once_with(NORMAL="0/0:3:5", TUMOR="0/1:4:6")
+            row.replace.assert_called_once_with(
+                NORMAL="0/0:3:5",
+                TUMOR="0/1:4:6",
+                FORMAT="GT:row_format",
+                FILTER="LowQSI",
+            )
+
+    @patch(
+        "gdc_filtration_tools.tools.format_strelka_vcf.parse_info",
+        return_value={"QSI": "5"},
+    )
+    def test_qsi_filter(self, pi):
+        row = Mock()
+        row.INFO = "row_info"
+        result = qsi_filter(row)
+        pi.assert_called_once_with("row_info")
+        assert result
 
     def test_convert_gt_spec(self):
         assert convert_gt_spec("ref") == "0/0"
