@@ -84,21 +84,41 @@ def fill_new_variant_record(
         new_record.filter.add(str(f))
     for k, v in old_record.info.items():
         new_record.info[k] = v
+
     for sample_name, sample_data in old_record.samples.items():
+        raw_dp = sample_data["DP"]
+        alt_dp = sample_data["AD"]
+
+        if raw_dp is None or alt_dp is None or raw_dp < 0 or alt_dp < 0:
+            raise ValueError(
+                f"Invalid SvABA depth at "
+                f"{old_record.contig}:{old_record.pos}, "
+                f"sample={sample_name}"
+            )
+
+        if alt_dp > raw_dp:
+            Logger.get_logger("format_svaba_vcf").warning(
+                f"SvABA AD ({alt_dp}) exceeds DP ({raw_dp}) "
+                f"at {old_record.contig}:{old_record.pos}, "
+                f"sample={sample_name}"
+            )
+
+        adjusted_dp = max(raw_dp, alt_dp)
+
         for k, v in sample_data.items():
             if k == "GQ":
                 new_record.samples[sample_name][k] = 0
             elif k == "PL":
-                new_record.samples[sample_name][k] = tuple([int(round(i)) for i in v])
+                new_record.samples[sample_name][k] = tuple(int(round(i)) for i in v)
             elif k == "AD":
-                dp = sample_data["DP"]
-                ad = v
-                ref_dp = dp - ad
-                alt_dp = ad
-                new_record.samples[sample_name][k] = tuple([ref_dp, alt_dp])
+                new_record.samples[sample_name][k] = (
+                    adjusted_dp - alt_dp,
+                    alt_dp,
+                )
+            elif k == "DP":
+                new_record.samples[sample_name][k] = adjusted_dp
             else:
                 new_record.samples[sample_name][k] = v
-    return new_record
 
 
 def format_svaba_vcf(input_vcf: str, output_vcf: str) -> None:
